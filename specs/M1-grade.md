@@ -50,13 +50,13 @@ Permitir que a organização crie, altere e cancele atividades (palestras e mini
 - **R2 (Perfil de Organização):** As rotas de escrita (`POST /atividades`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que o usuário autenticado tenha papel `organizacao`. Se for `participante`, recusa com `403 SOMENTE_ORGANIZACAO`. (P22, RN-101, contrato-api.md)
 - **R3 (Perfil de Leitura):** As rotas de leitura (`GET /salas`, `GET /atividades`, `GET /atividades/:id`) permitem acesso a qualquer usuário autenticado (`organizacao` ou `participante`). (P23, contrato-api.md)
 - **R4 (Existência de Atividade):** Operações em atividades específicas (`GET /atividades/:id`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que a atividade exista. Se não existir, recusa com `404 NAO_ENCONTRADO`. (P24, contrato-api.md)
-- **R5 (Corpo de Requisição):** Requisições com corpo malformado, não-JSON ou campos obrigatórios ausentes/com tipos inválidos geram `422 DADOS_INVALIDOS`. (contrato-api.md)
+- **R5 (Corpo de Requisição):** Requisições com corpo malformado, não-JSON ou campos obrigatórios ausentes/com tipos inválidos geram `422 DADOS_INVALIDOS`. (P13, P25, contrato-api.md)
 - **R6 (Ordem das Verificações):** A ordem de prioridade para verificação de erros é: 1º Identificação (401), 2º Perfil (403), 3º Existência (404), 4º Corpo (422 DADOS_INVALIDOS), e por último as regras de negócio específicas da atividade. (P25, contrato-api.md)
 - **R7 (Quantidade de Encontros):** Palestras devem ter exatamente 1 encontro; minicursos devem ter de 2 a 5 encontros. Caso contrário, recusa com `422 QUANTIDADE_DE_ENCONTROS`. (P1, RN-102, RN-103)
 - **R8 (Validade do Encontro):** Cada encontro deve durar entre 1 hora e 4 horas, começar e terminar no mesmo dia (sem atravessar a meia-noite), situar-se entre os dias 19 e 23/10/2026 (horário de Brasília). Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, RN-104, RN-105)
 - **R9 (Sem Sobreposição na Atividade):** Os encontros de uma mesma atividade não podem se sobrepor no tempo. Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, P12, RN-106)
 - **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)
-- **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)
+- **R11 (Capacidade da Sala):** As vagas devem ser um número inteiro de no mínimo 1 e no máximo a capacidade da sala da atividade, tanto no `POST` quanto no `PATCH`. Acima da capacidade, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`; abaixo de 1 ou não inteiro, recusa com `422 DADOS_INVALIDOS`. (P3, P13, RN-107)
 - **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)
 - **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)
 - **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), apenas `titulo` e `vagas` podem ser modificados; campos como `salaId`, `tipo` e a lista de `encontros` são não editáveis após a criação. Qualquer tentativa de alterar campos não editáveis recusa com `422 CAMPO_NAO_EDITAVEL`. (P4, P17, P19, RN-110)
@@ -67,8 +67,8 @@ Permitir que a organização crie, altere e cancele atividades (palestras e mini
 - **R19 (IDs de Encontros):** Os IDs de encontros gerados pelo sistema seguem o formato `enc_` seguido de 8 hexadecimais minúsculos, sendo únicos em todo o sistema. (P18, contrato-api.md)
 - **R20 (Cancelamento Sem Corpo):** O endpoint `POST /atividades/:id/cancelamento` não requer corpo de requisição; se algum corpo for enviado, ele é ignorado. (P20)
 - **R21 (Filtros de Listagem):** No `GET /atividades`, os filtros `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso` são cumulativos. Uma atividade aparece se possuir pelo menos um encontro no dia especificado (no fuso de Brasília) e corresponder ao tipo, quando informados. (P8, RN-116)
-- **R22 (Ordenação de Resultados):** No `GET /atividades`, os resultados são ordenados pelo horário de início do 1º encontro e, em caso de empate, pelo título em ordem alfabética. No `GET /salas`, os resultados seguem a ordem dos dados iniciais. (P16, RN-115)
-- **R23 (Situação Calculada):** A situação da atividade é calculada dinamicamente pelo relógio: `prevista` (antes do início do 1º encontro), `em_andamento` (a partir do início do 1º encontro até o fim do último encontro), `encerrada` (após o fim do último encontro), e `cancelada` (sobrepõe todas as outras se a atividade foi cancelada). (P5, P6, RN-114)
+- **R22 (Ordenação de Resultados):** No `GET /atividades`, os resultados são ordenados pelo início do 1º encontro e, em caso de empate, pelo título em ordem alfabética. Atividades canceladas continuam aparecendo. No `GET /salas`, os resultados seguem a ordem dos dados iniciais. (P6, P16, RN-115)
+- **R23 (Situação Calculada):** A situação é calculada pelo relógio: `prevista` antes do início do 1º encontro; `em_andamento` a partir do início do 1º encontro (inclusive) até antes do fim do último; `encerrada` a partir do fim do último encontro (inclusive); `cancelada` prevalece sobre todas. (P5, P6, RN-114)
 - **R24 (Métrica de Ocupação):** Os campos de métricas são calculados da seguinte forma: `ocupadas` = inscrições confirmadas + convocadas; `vagasRestantes` = `vagas` - `ocupadas`; `emEspera` = contagem de inscrições em espera. (P11, RN-111, contrato-api.md)
 
 ## 6. Critérios de aceite
@@ -92,12 +92,21 @@ Permitir que a organização crie, altere e cancele atividades (palestras e mini
 17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.
 18. (R21) GET /atividades?dia=2026-10-19&tipo=minicurso retornando apenas minicursos do dia especificado.
 19. (R23) GET /atividades mostrando situação `prevista`, `em_andamento`, `encerrada` ou `cancelada` conforme o relógio de teste.
+20. (R10) Sala 101 com encontro das 08:00 às 10:00; outro encontro na sala 101 começando às 10:14 → 409 `CONFLITO_DE_SALA`; começando às 10:15 → 201.
+21. (R10) Encontro de atividade cancelada não gera conflito de sala.
+22. (R8) Encontro das 23:00 às 00:30 → 422 `ENCONTRO_INVALIDO`.
+23. (R21) Encontro das 21:00 às 22:30 de 20/10 (horário de Brasília) aparece em `?dia=2026-10-20`.
+24. (R15) Cancelamento com o relógio exatamente no início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.
+25. (R22) Atividade cancelada aparece em `GET /atividades`.
+26. (R23) Com o relógio exatamente no fim do último encontro, a situação é `encerrada`.
 
 ## 7. Como isto será verificado
 A verificação será feita por meio de testes de integração HTTP na API Express, utilizando a costura externa `criarServidor()` com `MODO_TESTE=1`, manipulando o relógio via `PUT /_teste/relogio` e reiniciando o estado via `POST /_teste/reset`.
+Como o M2 não faz parte desta entrega, os testes de R17 e R24 inserem inscrições diretamente no banco.
 
 ## 8. Fatias de entrega
 
-1. **Fatia 1 (Leitura básica e autenticação):** GET /salas, GET /atividades, GET /atividades/:id, validação de cabeçalho `X-Usuario` (R1, R3, R4, R6, R21, R22, R23).
-2. **Fatia 2 (Criação de atividades e validações):** POST /atividades, restrição de organização (R2), quantidade de encontros (R7), validade de encontros (R8, R9), conflito de sala/intervalo (R10), capacidade (R11), sala inválida (R12), título (R13), cálculo de carga horária e IDs (R18, R19).
-3. **Fatia 3 (Alteração, cancelamento e métricas):** PATCH /atividades/:id (R14, R17), POST /atividades/:id/cancelamento (R15, R16, R20), e cálculo de métricas de ocupação (R24).
+1. **Fatia 1 (Identificação e leitura básica):** validação de `X-Usuario`, GET /salas, GET /atividades/:id inexistente (R1, R3, R4, R6).
+2. **Fatia 2 (Criação e validações):** POST /atividades (R2, R5, R7, R8, R9, R10, R11, R12, R13, R18, R19).
+3. **Fatia 3 (Listagem e situação):** GET /atividades com filtros, ordenação, situação e métricas (R21, R22, R23, R24).
+4. **Fatia 4 (Alteração e cancelamento):** PATCH /atividades/:id e POST /atividades/:id/cancelamento (R14, R15, R16, R17, R20).
