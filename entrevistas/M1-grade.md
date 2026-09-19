@@ -2,23 +2,23 @@
 
 | P-xx | Pergunta | Resposta | Fontes | Status |
 |---|---|---|---|---|
-| P1 | Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)? | | | Pendente |
-| P2 | O que define um `ENCONTRO_INVALIDO`? Existe duração mínima/máxima? Devem ser nos dias do evento? | | | Pendente |
-| P3 | `CONFLITO_DE_SALA` exige intervalo entre atividades? `VAGAS_ACIMA_DA_CAPACIDADE` permite exceção? | | | Pendente |
-| P4 | Quais campos são `CAMPO_NAO_EDITAVEL`? Quando a atividade é considerada `ATIVIDADE_JA_INICIADA`? | | | Pendente |
-| P5 | Regras exatas de transição para `situacao` (`prevista`, `em_andamento`, `encerrada`) baseadas no relógio? | | | Pendente |
-| P6 | O que acontece no cancelamento? Continua na listagem? Qual a `situacao`? Existe prazo limite? | | | Pendente |
-| P7 | No `PATCH /atividades/:id`, o erro `VAGAS_ABAIXO_DOS_INSCRITOS` considera apenas confirmados ou inclui a lista de espera? | | | Pendente |
-| P8 | No `GET /atividades`, os filtros `?dia` e `?tipo` são cumulativos? Como tratar atividades multi-dia no filtro? | | | Pendente |
-| P9 | Como é calculado o campo `cargaHorariaMinutos`? Considera intervalos entre encontros ou apenas a soma das durações? | | | Pendente |
-| P10 | Se a atividade já está cancelada, tentar cancelá-la de novo ou editá-la (`PATCH`) gera `ATIVIDADE_CANCELADA`? | | | Pendente |
-| P11 | Como são calculados `ocupadas`, `vagasRestantes` e `emEspera`? `ocupadas` inclui convocadas? | | | Pendente |
-| P12 | Uma atividade pode ter encontros que se sobrepõem no tempo (ex: dois encontros no mesmo horário)? | | | Pendente |
-| P13 | Quais as regras de validação para `titulo` (tamanho mín/máx) e `vagas` (valor mínimo)? | | | Pendente |
-| P14 | No `PATCH /atividades/:id`, o que acontece se a organização tentar alterar a `vagas` para um valor menor que a `capacidade` da sala, mas acima dos inscritos? | | | Pendente |
-| P15 | Qual a tolerância para `FORA_DA_JANELA` em relação ao início e fim dos encontros? | | | Pendente |
-| P16 | Qual a ordem de exibição dos resultados em `GET /salas` e `GET /atividades`? | | | Pendente |
-| P17 | No `PATCH /atividades/:id`, é permitido alterar a sala (`salaId`) ou os encontros? Se sim, em quais condições? | | | Pendente |
-| P18 | Como os IDs dos encontros (`enc_...`) devem ser gerados? Eles devem ser únicos por atividade ou por todo o sistema? | | | Pendente |
-| P19 | Se `salaId` não existir no `POST` ou `PATCH`, o erro é `404` ou `422`? | | | Pendente |
-| P20 | O endpoint `POST /atividades/:id/cancelamento` requer algum corpo de requisição em JSON ou deve ser chamado sem corpo? | | | Pendente |
+| P1 | Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)? | Palestra tem exatamente 1 encontro; minicurso, de 2 a 5 | RN-102, RN-103 | Respondida |
+| P2 | O que define um `ENCONTRO_INVALIDO`? Existe duração mínima/máxima? Devem ser nos dias do evento? | Cada encontro dura de 1 h a 4 h, começa e termina no mesmo dia (não atravessa a meia-noite), entre 19 e 23/10/2026, e os encontros da mesma atividade não se sobrepõem. Horários são de Brasília | RN-104, RN-105, RN-106 | Respondida |
+| P3 | `CONFLITO_DE_SALA` exige intervalo entre atividades? `VAGAS_ACIMA_DA_CAPACIDADE` permite exceção? | Precisa de pelo menos 15 min entre um encontro e outro na mesma sala; atividade cancelada não conta. Vagas não têm exceção: de 1 até a capacidade da sala | RN-108, RN-107 | Respondida |
+| P4 | Quais campos são `CAMPO_NAO_EDITAVEL`? Quando a atividade é considerada `ATIVIDADE_JA_INICIADA`? | Depois de criada, só título e vagas podem mudar. A atividade começou quando o relógio chega ao início do 1º encontro, inclusive; esse erro é só no cancelamento | RN-110, RN-112 | Respondida |
+| P5 | Regras exatas de transição para `situacao` (`prevista`, `em_andamento`, `encerrada`) baseadas no relógio? | Calculada pelo relógio: prevista antes do início do 1º encontro; em andamento a partir dele; encerrada a partir do fim do último; cancelada vale acima de todas | RN-114 | Respondida |
+| P6 | O que acontece no cancelamento? Continua na listagem? Qual a `situacao`? Existe prazo limite? | Vira cancelada, continua aparecendo na listagem, só pode cancelar antes de começar e o cancelamento é definitivo | RN-112, RN-113, RN-114, RN-115 | Respondida |
+| P7 | No `PATCH /atividades/:id`, o erro `VAGAS_ABAIXO_DOS_INSCRITOS` considera apenas confirmados ou inclui a lista de espera? | Conta quem ocupa vaga: confirmadas + convocadas. Espera não conta | RN-111 | Respondida |
+| P8 | No `GET /atividades`, os filtros `?dia` e `?tipo` são cumulativos? Como tratar atividades multi-dia no filtro? | São cumulativos. A atividade aparece se tiver algum encontro naquele dia, no horário de Brasília | RN-116 | Respondida |
+| P9 | Como é calculado o campo `cargaHorariaMinutos`? Considera intervalos entre encontros ou apenas a soma das durações? | Soma das durações dos encontros, em minutos, sem os intervalos; a organização não informa e, se mandar, é ignorado | RN-109 | Respondida |
+| P10 | Se a atividade já está cancelada, tentar cancelá-la de novo ou editá-la (`PATCH`) gera `ATIVIDADE_CANCELADA`? | Sim: atividade cancelada não é alterada nem cancelada de novo | RN-113 | Respondida |
+| P11 | Como são calculados `ocupadas`, `vagasRestantes` e `emEspera`? `ocupadas` inclui convocadas? | ocupadas = confirmadas + convocadas; vagasRestantes = vagas − ocupadas; emEspera = quantos estão em espera | RN-111, contrato-api.md | Respondida |
+| P12 | Uma atividade pode ter encontros que se sobrepõem no tempo (ex: dois encontros no mesmo horário)? | Não, os encontros da mesma atividade não se sobrepõem | RN-106 | Respondida |
+| P13 | Quais as regras de validação para `titulo` (tamanho mín/máx) e `vagas` (valor mínimo)? | Título é obrigatório e não pode ser vazio, sem limite de tamanho. Vagas: número inteiro, mínimo 1 | RN-107, contrato-api.md, decisão técnica | Respondida |
+| P14 | No `PATCH /atividades/:id`, o que acontece se a organização tentar alterar a `vagas` para um valor menor que a `capacidade` da sala, mas acima dos inscritos? | É permitido: vagas podem ficar entre as inscrições que ocupam vaga e a capacidade da sala | RN-107, RN-110, RN-111 | Respondida |
+| P15 | Qual a tolerância para `FORA_DA_JANELA` em relação ao início e fim dos encontros? | Não é regra do M1; é do M3 | RN-301 | Respondida |
+| P16 | Qual a ordem de exibição dos resultados em `GET /salas` e `GET /atividades`? | GET /atividades: pelo início do 1º encontro e, no empate, pelo título. GET /salas: na ordem dos dados iniciais | RN-115, decisão técnica | Respondida |
+| P17 | No `PATCH /atividades/:id`, é permitido alterar a sala (`salaId`) ou os encontros? Se sim, em quais condições? | Não: sala e encontros não mudam depois de criada | RN-110, seção 7 | Respondida |
+| P18 | Como os IDs dos encontros (`enc_...`) devem ser gerados? Eles devem ser únicos por atividade ou por todo o sistema? | Prefixo enc_ + 8 hexadecimais minúsculos, únicos em todo o sistema | contrato-api.md seção 1 | Respondida |
+| P19 | Se `salaId` não existir no `POST` ou `PATCH`, o erro é `404` ou `422`? | salaId inexistente no POST dá 422 DADOS_INVALIDOS. No PATCH, qualquer mudança de sala dá CAMPO_NAO_EDITAVEL | contrato-api.md seção 1, RN-110, decisão técnica | Respondida |
+| P20 | O endpoint `POST /atividades/:id/cancelamento` requer algum corpo de requisição em JSON ou deve ser chamado sem corpo? | Não precisa de corpo; se vier algum, é ignorado | decisão técnica | Respondida |
