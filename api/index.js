@@ -272,6 +272,57 @@ function criarServidor(port) {
     });
   });
 
+  app.post('/atividades/:id/cancelamento', (req, res) => {
+    if (req.usuario.papel !== 'organizacao') {
+      return res.status(403).json({ erro: 'SOMENTE_ORGANIZACAO', mensagem: 'Apenas organização pode cancelar atividades' });
+    }
+
+    const { id } = req.params;
+    const stmtAtv = db.prepare('SELECT * FROM atividades WHERE id = ?');
+    const atividade = stmtAtv.get(id);
+    if (!atividade) {
+      return res.status(404).json({ erro: 'NAO_ENCONTRADO', mensagem: 'Atividade não encontrada' });
+    }
+
+    if (atividade.situacao === 'cancelada') {
+      return res.status(422).json({ erro: 'ATIVIDADE_CANCELADA', mensagem: 'Atividade já está cancelada' });
+    }
+
+    const encontrosStmt = db.prepare('SELECT id, inicio, fim FROM encontros WHERE atividadeId = ? ORDER BY inicio ASC');
+    const encontros = encontrosStmt.all(id);
+
+    if (encontros.length > 0) {
+      const primeiroInicio = new Date(encontros[0].inicio).getTime();
+      const agoraTime = new Date(relogio).getTime();
+      if (agoraTime >= primeiroInicio) {
+        return res.status(422).json({ erro: 'ATIVIDADE_JA_INICIADA', mensagem: 'Atividade já foi iniciada' });
+      }
+    }
+
+    db.prepare('UPDATE atividades SET situacao = ? WHERE id = ?').run('cancelada', id);
+
+    let cargaHorariaMinutos = 0;
+    for (const enc of encontros) {
+      const inicio = new Date(enc.inicio);
+      const fim = new Date(enc.fim);
+      cargaHorariaMinutos += Math.round((fim - inicio) / 1000 / 60);
+    }
+
+    res.status(200).json({
+      id: atividade.id,
+      titulo: atividade.titulo,
+      tipo: atividade.tipo,
+      salaId: atividade.salaId,
+      vagas: atividade.vagas,
+      encontros,
+      cargaHorariaMinutos,
+      situacao: 'cancelada',
+      ocupadas: 0,
+      vagasRestantes: atividade.vagas,
+      emEspera: 0
+    });
+  });
+
   return new Promise((resolve) => {
     const server = app.listen(port, () => resolve(server));
   });

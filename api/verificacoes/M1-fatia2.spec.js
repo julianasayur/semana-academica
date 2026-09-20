@@ -353,5 +353,125 @@ test('POST /atividades com conflito de sala (menos de 15 min de intervalo, ex: 1
   assert.strictEqual(res3.status, 201);
 });
 
+test('R10, critério 20: encontro na mesma sala começando 15 min depois do fim do anterior (10:15) é aceito com 201', async () => {
+  const res1 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade A',
+      tipo: 'palestra',
+      salaId: 'sala-102',
+      vagas: 20,
+      encontros: [{ inicio: '2026-10-19T08:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res1.status, 201);
+
+  const res2 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade B',
+      tipo: 'palestra',
+      salaId: 'sala-102',
+      vagas: 20,
+      encontros: [{ inicio: '2026-10-19T10:15:00-03:00', fim: '2026-10-19T12:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res2.status, 201);
+});
+
+test('R10, critério 21: encontro de atividade cancelada não gera CONFLITO_DE_SALA', async () => {
+  const res1 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade a Cancelar',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 50,
+      encontros: [{ inicio: '2026-10-19T08:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res1.status, 201);
+  const atv1 = await res1.json();
+
+  const cancelRes = await fetch(`http://localhost:${port}/atividades/${atv1.id}/cancelamento`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana' }
+  });
+  assert.strictEqual(cancelRes.status, 200);
+
+  const res2 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Nova no Horário',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 50,
+      encontros: [{ inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res2.status, 201);
+});
+
+test('R8: encontro com menos de 1 hora de duração -> 422 ENCONTRO_INVALIDO', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Palestra Curta',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 10,
+      encontros: [
+        { inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T09:45:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(res.status, 422);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'ENCONTRO_INVALIDO');
+});
+
+test('R8: encontro fora do período de 19 a 23/10/2026 -> 422 ENCONTRO_INVALIDO', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Palestra Fora de Data',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 10,
+      encontros: [
+        { inicio: '2026-10-24T09:00:00-03:00', fim: '2026-10-24T10:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(res.status, 422);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'ENCONTRO_INVALIDO');
+});
+
+test('R11: vagas igual a 0 -> 422 DADOS_INVALIDOS', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Palestra Zero Vagas',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 0,
+      encontros: [
+        { inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(res.status, 422);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'DADOS_INVALIDOS');
+});
+
 
 
