@@ -334,3 +334,56 @@ test('R24: conferir ocupadas, vagasRestantes e emEspera em GET /atividades/:id',
   assert.strictEqual(detail.vagasRestantes, 8);
   assert.strictEqual(detail.emEspera, 2);
 });
+
+test('PATCH /atividades/:id por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO', async () => {
+  const createRes = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Para Patch Participante',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 30,
+      encontros: [
+        { inicio: '2026-10-19T10:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(createRes.status, 201);
+  const atv = await createRes.json();
+
+  const patchRes = await fetch(`http://localhost:${port}/atividades/${atv.id}`, {
+    method: 'PATCH',
+    headers: { 'X-Usuario': 'p-carla', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo: 'Novo Título' })
+  });
+  assert.strictEqual(patchRes.status, 403);
+  const err = await patchRes.json();
+  assert.strictEqual(err.erro, 'SOMENTE_ORGANIZACAO');
+});
+
+test('POST /atividades/:id/cancelamento por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO', async () => {
+  const createRes = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Para Cancelamento Participante',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 30,
+      encontros: [
+        { inicio: '2026-10-19T10:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(createRes.status, 201);
+  const atv = await createRes.json();
+
+  const cancelRes = await fetch(`http://localhost:${port}/atividades/${atv.id}/cancelamento`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'p-carla' }
+  });
+  assert.strictEqual(cancelRes.status, 403);
+  const err = await cancelRes.json();
+  assert.strictEqual(err.erro, 'SOMENTE_ORGANIZACAO');
+});
