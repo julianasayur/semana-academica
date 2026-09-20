@@ -22,6 +22,7 @@ function getBrasiliaDateStr(dateStr) {
 
 function resetarDados() {
   db.exec(`
+    DROP TABLE IF EXISTS inscricoes;
     DROP TABLE IF EXISTS encontros;
     DROP TABLE IF EXISTS atividades;
     DROP TABLE IF EXISTS salas;
@@ -50,6 +51,16 @@ function resetarDados() {
       atividadeId TEXT,
       inicio TEXT,
       fim TEXT,
+      FOREIGN KEY(atividadeId) REFERENCES atividades(id)
+    );
+    CREATE TABLE IF NOT EXISTS inscricoes (
+      id TEXT PRIMARY KEY,
+      atividadeId TEXT,
+      participanteId TEXT,
+      status TEXT,
+      posicaoNaEspera INTEGER,
+      convocadaAte TEXT,
+      criadaEm TEXT,
       FOREIGN KEY(atividadeId) REFERENCES atividades(id)
     );
 
@@ -122,14 +133,121 @@ function criarServidor(port) {
     next();
   });
 
+  function formatarAtividade(atividade, encontros) {
+    encontros.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+    
+    let cargaHorariaMinutos = 0;
+    for (const enc of encontros) {
+      const inicio = new Date(enc.inicio);
+      const fim = new Date(enc.fim);
+      cargaHorariaMinutos += Math.round((fim - inicio) / 1000 / 60);
+    }
+
+    let situacao = atividade.situacao;
+    if (situacao !== 'cancelada') {
+      if (encontros.length > 0) {
+        const primeiroInicio = new Date(encontros[0].inicio).getTime();
+        const ultimoFim = new Date(encontros[encontros.length - 1].fim).getTime();
+        const agoraTime = new Date(relogio).getTime();
+        if (agoraTime < primeiroInicio) {
+          situacao = 'prevista';
+        } else if (agoraTime >= primeiroInicio && agoraTime < ultimoFim) {
+          situacao = 'em_andamento';
+        } else {
+          situacao = 'encerrada';
+        }
+      } else {
+        situacao = 'prevista';
+      }
+    }
+
+    const ocupadasStmt = db.prepare(`
+      SELECT COUNT(*) as cnt FROM inscricoes 
+      WHERE atividadeId = ? AND status IN ('confirmada', 'convocada')
+    `);
+    const ocupadasRes = ocupadasStmt.get(atividade.id);
+    const ocupadas = ocupadasRes ? ocupadasRes.cnt : 0;
+
+    const emEsperaStmt = db.prepare(`
+      SELECT COUNT(*) as cnt FROM inscricoes 
+      WHERE atividadeId = ? AND status = 'em_espera'
+    `);
+    const emEsperaRes = emEsperaStmt.get(atividade.id);
+    const emEspera = emEsperaRes ? emEsperaRes.cnt : 0;
+
+    const vagasRestantes = atividade.vagas - ocupadas;
+
+    return {
+      id: atividade.id,
+      titulo: atividade.titulo,
+      tipo: atividade.tipo,
+      salaId: atividade.salaId,
+      vagas: atividade.vagas,
+      encontros: encontros.map(e => ({ id: e.id, inicio: e.inicio, fim: e.fim })),
+      cargaHorariaMinutos,
+      situacao,
+      ocupadas,
+      vagasRestantes,
+      emEspera
+    };
+  }
+
   app.get('/salas', (req, res) => {
     const stmt = db.prepare('SELECT * FROM salas');
     const salas = stmt.all();
     res.status(200).json(salas);
   });
 
+  app.get('/atividades', (req, res) => {
+    const { dia, tipo } = req.query;
+    const atvStmt = db.prepare('SELECT * FROM atividades');
+    const atividadesRows = atvStmt.all();
+
+    const resultado = [];
+    for (const atv of atividadesRows) {
+      const encStmt = db.prepare('SELECT id, inicio, fim FROM encontros WHERE atividadeId = ? ORDER BY inicio ASC');
+      const encontros = encStmt.all(atv.id);
+
+      if (tipo && atv.tipo !== tipo) {
+        continue;
+      }
+
+      if (dia) {
+        const temEncontroNoDia = encontros.some(enc => getBrasiliaDateStr(enc.inicio) === dia);
+        if (!temEncontroNoDia) {
+          continue;
+        }
+      }
+
+      const formatted = formatarAtividade(atv, encontros);
+      resultado.push(formatted);
+    }
+
+    resultado.sort((a, b) => {
+      const startA = a.encontros.length > 0 ? new Date(a.encontros[0].inicio).getTime() : 0;
+      const startB = b.encontros.length > 0 ? new Date(b.encontros[0].inicio).getTime() : 0;
+      if (startA !== startB) {
+        return startA - startB;
+      }
+      return a.titulo.localeCompare(b.titulo);
+    });
+
+    res.status(200).json(resultado);
+  });
+
   app.get('/atividades/:id', (req, res) => {
-    res.status(404).json({ erro: 'NAO_ENCONTRADO', mensagem: 'Atividade não encontrada' });
+    const { id } = req.params;
+    const atvStmt = db.prepare('SELECT * FROM atividades WHERE id = ?');
+    const atividade = atvStmt.get(id);
+    if (!atividade) {
+      return res.status(404).json({ erro: 'NAO_ENCONTRADO', mensagem: 'Atividade não encontrada' });
+    }
+
+    const encStmt = db.prepare('SELECT id, inicio, fim FROM encontros WHERE atividadeId = ? ORDER BY inicio ASC');
+    const encontros = encStmt.all(id);
+
+    const formatted = formatarAtividade(atividade, encontros);
+    res.status(200).json(formatted);
   });
 
   app.post('/atividades', (req, res) => {
