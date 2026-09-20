@@ -64,7 +64,8 @@ test('GET /atividades com filtros ?dia=2026-10-19&tipo=minicurso retorna apenas 
       salaId: 'lab-3',
       vagas: 20,
       encontros: [
-        { inicio: '2026-10-21T14:00:00-03:00', fim: '2026-10-21T16:00:00-03:00' }
+        { inicio: '2026-10-21T14:00:00-03:00', fim: '2026-10-21T16:00:00-03:00' },
+        { inicio: '2026-10-22T14:00:00-03:00', fim: '2026-10-22T16:00:00-03:00' }
       ]
     })
   });

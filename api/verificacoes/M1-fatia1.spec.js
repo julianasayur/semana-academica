@@ -61,3 +61,24 @@ test('GET /atividades/:id com ID inexistente -> 404', async () => {
   const body = await res.json();
   assert.strictEqual(body.erro, 'NAO_ENCONTRADO');
 });
+
+test('PATCH /atividades/:id com ID inexistente -> 404 (R4)', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades/atv_inexistente`, {
+    method: 'PATCH',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo: 'Novo' })
+  });
+  assert.strictEqual(res.status, 404);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'NAO_ENCONTRADO');
+});
+
+test('POST /atividades/:id/cancelamento com ID inexistente -> 404 (R4)', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades/atv_inexistente/cancelamento`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana' }
+  });
+  assert.strictEqual(res.status, 404);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'NAO_ENCONTRADO');
+});

@@ -106,6 +106,38 @@ test('PATCH /atividades/:id em atividade já cancelada retorna 422 ATIVIDADE_CAN
   assert.strictEqual(err.erro, 'ATIVIDADE_CANCELADA');
 });
 
+test('POST /atividades/:id/cancelamento em atividade já cancelada retorna 422 ATIVIDADE_CANCELADA (R16)', async () => {
+  const createRes = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Para Cancelamento Duplo',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 30,
+      encontros: [
+        { inicio: '2026-10-19T10:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(createRes.status, 201);
+  const atv = await createRes.json();
+
+  const cancelRes1 = await fetch(`http://localhost:${port}/atividades/${atv.id}/cancelamento`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana' }
+  });
+  assert.strictEqual(cancelRes1.status, 200);
+
+  const cancelRes2 = await fetch(`http://localhost:${port}/atividades/${atv.id}/cancelamento`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana' }
+  });
+  assert.strictEqual(cancelRes2.status, 422);
+  const err = await cancelRes2.json();
+  assert.strictEqual(err.erro, 'ATIVIDADE_CANCELADA');
+});
+
 test('POST /atividades/:id/cancelamento com relógio após ou exatamente no início do 1º encontro retorna 422 ATIVIDADE_JA_INICIADA (critérios 14, 24, R15)', async () => {
   const createRes = await fetch(`http://localhost:${port}/atividades`, {
     method: 'POST',
@@ -212,6 +244,33 @@ test('PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuai
   assert.strictEqual(updated.ocupadas, 2);
 });
 
+test('PATCH /atividades/:id aumentando vagas acima da capacidade da sala retorna 422 VAGAS_ACIMA_DA_CAPACIDADE (R11)', async () => {
+  const createRes = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Para Aumentar Vagas',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 30,
+      encontros: [
+        { inicio: '2026-10-19T10:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(createRes.status, 201);
+  const atv = await createRes.json();
+
+  const patchRes = await fetch(`http://localhost:${port}/atividades/${atv.id}`, {
+    method: 'PATCH',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vagas: 50 })
+  });
+  assert.strictEqual(patchRes.status, 422);
+  const err = await patchRes.json();
+  assert.strictEqual(err.erro, 'VAGAS_ACIMA_DA_CAPACIDADE');
+});
+
 test('POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R20)', async () => {
   const createRes = await fetch(`http://localhost:${port}/atividades`, {
     method: 'POST',
@@ -237,4 +296,41 @@ test('POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R2
   assert.strictEqual(cancelRes.status, 200);
   const body = await cancelRes.json();
   assert.strictEqual(body.situacao, 'cancelada');
+});
+
+test('R24: conferir ocupadas, vagasRestantes e emEspera em GET /atividades/:id', async () => {
+  const createRes = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Metricas',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 10,
+      encontros: [
+        { inicio: '2026-10-19T10:00:00-03:00', fim: '2026-10-19T11:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(createRes.status, 201);
+  const atv = await createRes.json();
+
+  const db = new DatabaseSync(dbPath);
+  db.prepare(`
+    INSERT INTO inscricoes (id, atividadeId, participanteId, status)
+    VALUES ('ins_m1', ?, 'p-carla', 'confirmada'),
+           ('ins_m2', ?, 'p-diego', 'convocada'),
+           ('ins_m3', ?, 'p-elena', 'em_espera'),
+           ('ins_m4', ?, 'p-fabio', 'em_espera')
+  `).run(atv.id, atv.id, atv.id, atv.id);
+
+  const getRes = await fetch(`http://localhost:${port}/atividades/${atv.id}`, {
+    headers: { 'X-Usuario': 'p-carla' }
+  });
+  assert.strictEqual(getRes.status, 200);
+  const detail = await getRes.json();
+
+  assert.strictEqual(detail.ocupadas, 2);
+  assert.strictEqual(detail.vagasRestantes, 8);
+  assert.strictEqual(detail.emEspera, 2);
 });

@@ -90,6 +90,53 @@ test('POST /atividades com palestra tendo 2 encontros -> 422 QUANTIDADE_DE_ENCON
   assert.strictEqual(body.erro, 'QUANTIDADE_DE_ENCONTROS');
 });
 
+test('POST /atividades com minicurso tendo 1 encontro e 6 encontros -> 422 QUANTIDADE_DE_ENCONTROS', async () => {
+  const res1 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      titulo: 'Minicurso com 1 encontro',
+      tipo: 'minicurso',
+      salaId: 'auditorio',
+      vagas: 10,
+      encontros: [
+        { inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(res1.status, 422);
+  const body1 = await res1.json();
+  assert.strictEqual(body1.erro, 'QUANTIDADE_DE_ENCONTROS');
+
+  const res6 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      titulo: 'Minicurso com 6 encontros',
+      tipo: 'minicurso',
+      salaId: 'auditorio',
+      vagas: 10,
+      encontros: [
+        { inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' },
+        { inicio: '2026-10-20T09:00:00-03:00', fim: '2026-10-20T10:00:00-03:00' },
+        { inicio: '2026-10-21T09:00:00-03:00', fim: '2026-10-21T10:00:00-03:00' },
+        { inicio: '2026-10-22T09:00:00-03:00', fim: '2026-10-22T10:00:00-03:00' },
+        { inicio: '2026-10-23T09:00:00-03:00', fim: '2026-10-23T10:00:00-03:00' },
+        { inicio: '2026-10-23T11:00:00-03:00', fim: '2026-10-23T12:00:00-03:00' }
+      ]
+    })
+  });
+  assert.strictEqual(res6.status, 422);
+  const body6 = await res6.json();
+  assert.strictEqual(body6.erro, 'QUANTIDADE_DE_ENCONTROS');
+});
+
 test('POST /atividades com salaId inexistente (critério 11) -> 422 DADOS_INVALIDOS (R12)', async () => {
   const res = await fetch(`http://localhost:${port}/atividades`, {
     method: 'POST',
@@ -163,6 +210,28 @@ test('POST /atividades com usuário inexistente -> 401 USUARIO_DESCONHECIDO', as
   assert.strictEqual(body.erro, 'USUARIO_DESCONHECIDO');
 });
 
+test('R6: precedência de erros: 403 (perfil) tem prioridade sobre 404 (existência) e 422 (corpo)', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades/atv_inexistente`, {
+    method: 'PATCH',
+    headers: { 'X-Usuario': 'p-carla', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo: '' })
+  });
+  assert.strictEqual(res.status, 403);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'SOMENTE_ORGANIZACAO');
+});
+
+test('R6: precedência de erros: 404 (existência) tem prioridade sobre 422 (corpo)', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades/atv_inexistente`, {
+    method: 'PATCH',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo: '' })
+  });
+  assert.strictEqual(res.status, 404);
+  const body = await res.json();
+  assert.strictEqual(body.erro, 'NAO_ENCONTRADO');
+});
+
 test('POST /atividades com sucesso -> 201 Atividade (R18, R19)', async () => {
   const res = await fetch(`http://localhost:${port}/atividades`, {
     method: 'POST',
@@ -196,6 +265,68 @@ test('POST /atividades com sucesso -> 201 Atividade (R18, R19)', async () => {
   assert.strictEqual(atv.situacao, 'prevista');
 });
 
+test('POST /atividades enviando cargaHorariaMinutos no corpo confere que o valor é ignorado (R18)', async () => {
+  const res = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      titulo: 'Palestra Carga Horaria Enviada',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 10,
+      cargaHorariaMinutos: 9999,
+      encontros: [{
+        inicio: '2026-10-19T09:00:00-03:00',
+        fim: '2026-10-19T10:00:00-03:00'
+      }]
+    })
+  });
+  
+  assert.strictEqual(res.status, 201);
+  const atv = await res.json();
+  assert.strictEqual(atv.cargaHorariaMinutos, 60, 'carga horária calculada deve ser 60 minutos, ignorando o valor enviado');
+});
+
+test('R19: id do encontro bate com o formato enc_ + 8 hexadecimais minúsculos e unicidade', async () => {
+  const res1 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Formato ID 1',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 10,
+      encontros: [{ inicio: '2026-10-19T09:00:00-03:00', fim: '2026-10-19T10:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res1.status, 201);
+  const atv1 = await res1.json();
+  const id1 = atv1.encontros[0].id;
+
+  assert.match(id1, /^enc_[0-9a-f]{8}$/);
+
+  const res2 = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 'X-Usuario': 'org-ana', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      titulo: 'Atividade Formato ID 2',
+      tipo: 'palestra',
+      salaId: 'sala-101',
+      vagas: 10,
+      encontros: [{ inicio: '2026-10-19T11:00:00-03:00', fim: '2026-10-19T12:00:00-03:00' }]
+    })
+  });
+  assert.strictEqual(res2.status, 201);
+  const atv2 = await res2.json();
+  const id2 = atv2.encontros[0].id;
+
+  assert.match(id2, /^enc_[0-9a-f]{8}$/);
+  assert.notStrictEqual(id1, id2, 'IDs de encontros devem ser únicos globalmente');
+});
+
 test('POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5)', async () => {
   const res = await fetch(`http://localhost:${port}/atividades`, {
     method: 'POST',
@@ -218,6 +349,53 @@ test('POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5
   assert.strictEqual(res.status, 422);
   const body = await res.json();
   assert.strictEqual(body.erro, 'DADOS_INVALIDOS');
+});
+
+test('POST /atividades com corpo não-JSON e campo com tipo errado -> 422 DADOS_INVALIDOS (R5)', async () => {
+  const resText = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'text/plain'
+    },
+    body: 'isto nao e json'
+  });
+  assert.strictEqual(resText.status, 422);
+  const bodyText = await resText.json();
+  assert.strictEqual(bodyText.erro, 'DADOS_INVALIDOS');
+
+  const resBadJson = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'application/json'
+    },
+    body: '{ "titulo": "teste", malformado }'
+  });
+  assert.strictEqual(resBadJson.status, 422);
+  const bodyBadJson = await resBadJson.json();
+  assert.strictEqual(bodyBadJson.erro, 'DADOS_INVALIDOS');
+
+  const resTipo = await fetch(`http://localhost:${port}/atividades`, {
+    method: 'POST',
+    headers: { 
+      'X-Usuario': 'org-ana',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      titulo: 'Palestra Tipo Errado',
+      tipo: 'palestra',
+      salaId: 'auditorio',
+      vagas: 'dez',
+      encontros: [{
+        inicio: '2026-10-19T09:00:00-03:00',
+        fim: '2026-10-19T10:00:00-03:00'
+      }]
+    })
+  });
+  assert.strictEqual(resTipo.status, 422);
+  const bodyTipo = await resTipo.json();
+  assert.strictEqual(bodyTipo.erro, 'DADOS_INVALIDOS');
 });
 
 test('POST /atividades com encontro atravessando a meia-noite (critério 22) -> 422 ENCONTRO_INVALIDO (R8)', async () => {

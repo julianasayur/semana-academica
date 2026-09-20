@@ -94,6 +94,12 @@ function criarServidor(port) {
 
   const app = express();
   app.use(express.json());
+  app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+      return res.status(422).json({ erro: 'DADOS_INVALIDOS', mensagem: 'Corpo da requisição malformado ou não-JSON' });
+    }
+    next(err);
+  });
 
   // Estado do relógio em memória (apenas para MODO_TESTE)
   let relogio = '2026-10-13T09:00:00-03:00';
@@ -262,6 +268,9 @@ function criarServidor(port) {
       return res.status(403).json({ erro: 'SOMENTE_ORGANIZACAO', mensagem: 'Apenas organização pode criar atividades' });
     }
 
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+      return res.status(422).json({ erro: 'DADOS_INVALIDOS', mensagem: 'Dados obrigatórios ausentes ou inválidos' });
+    }
     const { titulo, tipo, salaId, vagas, encontros } = req.body;
     if (!titulo || typeof titulo !== 'string' || titulo.trim() === '' ||
         !tipo || !['palestra', 'minicurso'].includes(tipo) ||
@@ -280,6 +289,10 @@ function criarServidor(port) {
 
     if (tipo === 'palestra' && encontros.length !== 1) {
         return res.status(422).json({ erro: 'QUANTIDADE_DE_ENCONTROS', mensagem: 'Palestra deve ter exatamente 1 encontro' });
+    }
+
+    if (tipo === 'minicurso' && (encontros.length < 2 || encontros.length > 5)) {
+        return res.status(422).json({ erro: 'QUANTIDADE_DE_ENCONTROS', mensagem: 'Minicurso deve ter entre 2 e 5 encontros' });
     }
 
     // R12: Sala inexistente no POST -> 422 DADOS_INVALIDOS
