@@ -2,7 +2,7 @@ const express = require('express');
 const { DatabaseSync } = require('node:sqlite');
 const crypto = require('node:crypto');
 const dbPath = process.env.DB_PATH || './banco.db';
-const db = new DatabaseSync(dbPath);
+let db = new DatabaseSync(dbPath);
 
 function getBrasiliaDateStr(dateStr) {
   try {
@@ -88,6 +88,10 @@ function resetarDados() {
 resetarDados();
 
 function criarServidor(port) {
+  const currentDbPath = process.env.DB_PATH || './banco.db';
+  db = new DatabaseSync(currentDbPath);
+  resetarDados();
+
   const app = express();
   app.use(express.json());
 
@@ -388,6 +392,72 @@ function criarServidor(port) {
       vagasRestantes: vagas,
       emEspera: 0
     });
+  });
+
+  app.patch('/atividades/:id', (req, res) => {
+    if (!req.usuario) {
+      return res.status(401).json({ erro: 'USUARIO_DESCONHECIDO', mensagem: 'Usuário não autenticado' });
+    }
+    if (req.usuario.papel !== 'organizacao') {
+      return res.status(403).json({ erro: 'SOMENTE_ORGANIZACAO', mensagem: 'Apenas organização pode alterar atividades' });
+    }
+
+    const { id } = req.params;
+    const stmtAtv = db.prepare('SELECT * FROM atividades WHERE id = ?');
+    const atividade = stmtAtv.get(id);
+    if (!atividade) {
+      return res.status(404).json({ erro: 'NAO_ENCONTRADO', mensagem: 'Atividade não encontrada' });
+    }
+
+    if (atividade.situacao === 'cancelada') {
+      return res.status(422).json({ erro: 'ATIVIDADE_CANCELADA', mensagem: 'Atividade já está cancelada' });
+    }
+
+    const { titulo, tipo, salaId, vagas, encontros } = req.body;
+
+    if (salaId !== undefined || tipo !== undefined || encontros !== undefined) {
+      return res.status(422).json({ erro: 'CAMPO_NAO_EDITAVEL', mensagem: 'Campos salaId, tipo e encontros não são editáveis' });
+    }
+
+    if (titulo !== undefined) {
+      if (typeof titulo !== 'string' || titulo.trim() === '') {
+        return res.status(422).json({ erro: 'DADOS_INVALIDOS', mensagem: 'Título inválido' });
+      }
+    }
+
+    if (vagas !== undefined) {
+      if (typeof vagas !== 'number' || !Number.isInteger(vagas) || vagas < 1) {
+        return res.status(422).json({ erro: 'DADOS_INVALIDOS', mensagem: 'Vagas inválidas' });
+      }
+
+      const salaStmt = db.prepare('SELECT capacidade FROM salas WHERE id = ?');
+      const sala = salaStmt.get(atividade.salaId);
+      if (sala && vagas > sala.capacidade) {
+        return res.status(422).json({ erro: 'VAGAS_ACIMA_DA_CAPACIDADE', mensagem: 'Vagas acima da capacidade da sala' });
+      }
+
+      const ocupadasStmt = db.prepare(`
+        SELECT COUNT(*) as cnt FROM inscricoes 
+        WHERE atividadeId = ? AND status IN ('confirmada', 'convocada')
+      `);
+      const ocupadasRes = ocupadasStmt.get(id);
+      const ocupadas = ocupadasRes ? ocupadasRes.cnt : 0;
+      if (vagas < ocupadas) {
+        return res.status(409).json({ erro: 'VAGAS_ABAIXO_DOS_INSCRITOS', mensagem: 'Vagas abaixo do número de ocupantes atuais' });
+      }
+    }
+
+    const novoTitulo = titulo !== undefined ? titulo : atividade.titulo;
+    const novasVagas = vagas !== undefined ? vagas : atividade.vagas;
+
+    db.prepare('UPDATE atividades SET titulo = ?, vagas = ? WHERE id = ?').run(novoTitulo, novasVagas, id);
+
+    const updatedAtv = { ...atividade, titulo: novoTitulo, vagas: novasVagas };
+    const encStmt = db.prepare('SELECT id, inicio, fim FROM encontros WHERE atividadeId = ? ORDER BY inicio ASC');
+    const encontrosList = encStmt.all(id);
+
+    const formatted = formatarAtividade(updatedAtv, encontrosList);
+    res.status(200).json(formatted);
   });
 
   app.post('/atividades/:id/cancelamento', (req, res) => {
