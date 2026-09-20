@@ -48,11 +48,7 @@ function resetarDados() {
 }
 
 // Inicializa na primeira vez
-try {
-  resetarDados();
-} catch (e) {
-  // Ignora erros de lock durante inicialização em paralelo
-}
+resetarDados();
 
 function criarServidor(port) {
   const app = express();
@@ -63,11 +59,7 @@ function criarServidor(port) {
 
   if (process.env.MODO_TESTE === '1') {
     app.post('/_teste/reset', (req, res) => {
-      try {
-        resetarDados();
-      } catch (e) {
-        // Ignora lock
-      }
+      resetarDados();
       relogio = '2026-10-13T09:00:00-03:00';
       res.status(204).send();
     });
