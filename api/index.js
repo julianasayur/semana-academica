@@ -529,4 +529,11 @@ function criarServidor(port) {
   });
 }
 
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  criarServidor(port).then(() => {
+    console.log(`API rodando na porta ${port}`);
+  });
+}
+
 module.exports = { criarServidor };

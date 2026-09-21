@@ -1,122 +1,148 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
+import { setUsuario } from './api';
+import GradeAtividades from './pages/GradeAtividades';
+import DetalheAtividade from './pages/DetalheAtividade';
+import CriarAtividade from './pages/CriarAtividade';
+
+const usuarios = [
+  { id: 'org-ana', nome: 'Ana Beatriz Lima', papel: 'organizacao' },
+  { id: 'org-bruno', nome: 'Bruno Tavares', papel: 'organizacao' },
+  { id: 'p-carla', nome: 'Carla Mendes Souza', papel: 'participante' },
+  { id: 'p-diego', nome: 'Diego Alves', papel: 'participante' },
+  { id: 'p-elisa', nome: 'Elisa Fernandes da Rocha', papel: 'participante' },
+  { id: 'p-fabio', nome: 'Fábio Nogueira', papel: 'participante' },
+  { id: 'p-gabriela', nome: 'Gabriela Moura Castro', papel: 'participante' },
+  { id: 'p-heitor', nome: 'Heitor Campos', papel: 'participante' },
+  { id: 'p-isadora', nome: 'Isadora Ribeiro dos Santos', papel: 'participante' },
+  { id: 'p-joao', nome: 'João Pedro Martins', papel: 'participante' },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [usuarioAtivo, setUsuarioAtivo] = useState(usuarios[0].id);
+  const [pagina, setPagina] = useState('grade'); // 'grade' | 'criar'
+  const [atividadeSelecionadaId, setAtividadeSelecionadaId] = useState(null);
+
+  // Update backend header whenever selected user changes
+  useEffect(() => {
+    setUsuario(usuarioAtivo);
+  }, [usuarioAtivo]);
+
+  const usuarioObjeto = usuarios.find((u) => u.id === usuarioAtivo);
+
+  const handleSelectAtividade = (id) => {
+    setAtividadeSelecionadaId(id);
+  };
+
+  const handleCriacaoSucesso = () => {
+    setPagina('grade');
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid var(--border)',
+          paddingBottom: '16px',
+          marginBottom: '24px',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        <div style={{ textAlign: 'left' }}>
+          <h1 style={{ margin: '0 0 4px 0', fontSize: '28px', letterSpacing: '-0.5px' }}>Semana Acadêmica</h1>
+          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text)' }}>Módulo M1 - Grade de Atividades</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ textAlign: 'right' }}>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: 'var(--text)' }}>
+              Simular Usuário:
+            </label>
+            <select
+              value={usuarioAtivo}
+              onChange={(e) => setUsuarioAtivo(e.target.value)}
+              style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid var(--border)' }}
+              data-testid="select-usuario"
+            >
+              {usuarios.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.nome} ({u.papel === 'organizacao' ? 'Org' : 'Part'})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div
+            style={{
+              padding: '6px 12px',
+              borderRadius: '4px',
+              background: usuarioObjeto?.papel === 'organizacao' ? 'rgba(170, 59, 255, 0.15)' : 'var(--code-bg)',
+              border: '1px solid var(--border)',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+          >
+            {usuarioObjeto?.papel === 'organizacao' ? 'PAINEL ORGANIZAÇÃO' : 'VISUALIZAÇÃO PARTICIPANTE'}
+          </div>
         </div>
+      </header>
+
+      <nav style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => {
+            setPagina('grade');
+            setAtividadeSelecionadaId(null);
+          }}
+          style={{
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: 'none',
+            background: pagina === 'grade' ? 'var(--accent)' : 'var(--code-bg)',
+            color: pagina === 'grade' ? '#fff' : 'var(--text)',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+          data-testid="nav-grade"
         >
-          Count is {count}
+          Programação
         </button>
-      </section>
+        
+        {/* Render for both to allow verification of organization only actions by API */}
+        <button
+          onClick={() => setPagina('criar')}
+          style={{
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: 'none',
+            background: pagina === 'criar' ? 'var(--accent)' : 'var(--code-bg)',
+            color: pagina === 'criar' ? '#fff' : 'var(--text)',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+          data-testid="nav-criar"
+        >
+          Criar Atividade
+        </button>
+      </nav>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <main style={{ minHeight: '400px' }}>
+        {pagina === 'grade' ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
+            <GradeAtividades onSelectAtividade={handleSelectAtividade} />
+            <DetalheAtividade
+              atividadeId={atividadeSelecionadaId}
+              onBack={() => setAtividadeSelecionadaId(null)}
+            />
+          </div>
+        ) : (
+          <CriarAtividade onSuccess={handleCriacaoSucesso} />
+        )}
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
