@@ -1,0 +1,450 @@
+{
+ "info": {
+  "id": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+  "slug": "proud-wolf",
+  "projectID": "f0e37ae0e184b898118e8c2e53af97bc0dab3160",
+  "directory": "/home/juliana/semana-academica",
+  "path": "",
+  "title": "Preenchimento de pendências em M1-grade.md",
+  "agent": "build",
+  "model": {
+   "id": "gemini-3.6-flash",
+   "providerID": "google"
+  },
+  "version": "1.18.31",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0.0413481,
+  "tokens": {
+   "input": 24882,
+   "output": 1723,
+   "reasoning": 3835,
+   "cache": {
+    "read": 24588,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1789850025923,
+   "updated": 1789850537035
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789850025962
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.6-flash"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0bb5fffea0016XQVd2HTXaS2IQ",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "Vamos responder as perguntas marcadas como Pendente em entrevistas/M1-grade.md, uma de cada vez. Eu respondo com o que li no documento de requisitos, citando a regra; registre a minha resposta e ponha a regra na coluna Fontes. Não crie perguntas novas e não mexa nas perguntas já respondidas",
+     "id": "prt_0bb5ffff1001ysDjD7fW1UyXHP",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb5fffea0016XQVd2HTXaS2IQ"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb5fffea0016XQVd2HTXaS2IQ",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00803475,
+    "tokens": {
+     "total": 9853,
+     "input": 9638,
+     "output": 36,
+     "reasoning": 179,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.6-flash",
+    "providerID": "google",
+    "time": {
+     "created": 1789850026002,
+     "completed": 1789850030522
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb600012001tZUh2usDbN9WAe",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "snapshot": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "type": "step-start",
+     "id": "prt_0bb601071001P1ato90atK9XEc",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb600012001tZUh2usDbN9WAe"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Addressing Pending Questions**\n\nI'm focusing on the \"Pendente\" questions in `entrevistas/M1-grade.md`, tackling them individually. My approach involves referencing the requirements document to provide responses. I'll cite the specific rule I'm basing each answer on, and record this information in the \"Fontes\" column.\n\n\n",
+     "time": {
+      "start": 1789850030202,
+      "end": 1789850030283
+     },
+     "id": "prt_0bb60107a001NtMCDU1vvutyQb",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb600012001tZUh2usDbN9WAe"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "oALB931bjpwZwCHS",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/home/juliana/semana-academica/entrevistas/M1-grade.md"
+      },
+      "output": "[2911 caracteres omitidos]",
+      "title": "entrevistas/M1-grade.md",
+      "time": {
+       "start": 1789850030272,
+       "end": 1789850030365
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EqAGCp0GAWkUfROOGirOzACBkam0O4uJu2wTWmf5eGlYB5T1udSgenOjJgnlzzsiOV+rJhsir2yrkyeejqZWY4o76EzPh7QeLcM8qeQQ6/lX46sKZ9lhEnNpWtmr+fZmumhDZVzzHR1u3mdWSPNPZOmWS7R5RABi7eWuXGBMxd138E7K7GNzQ4dDIJLDAZys6wdWLUbAlI+SS6wDCgulbk6tnDSDzFyQuoCBA6RT3QR/C/wvUZIxN3NJQHgsiZ4wYoeJSkl5RMhkzMJQgDUIbNpGrgWzcBpdQkX6eihGOwDxmKgLQWGTu5/JAPHkr6pgSdTzGUAXcZUUXwQxn06x7HzYPic9DvjYQe3Kt5Nh196Kg8PiYNteR+kvT5vbn3Reep+GodIQvyCRxgnTkchJmcYD/n0oVW8fqFasqH8/k4HglPuYWZOlxht6HIGPvag4MIG2LjubgbKhQZfs65020u/ljcr04VsAkwBdx7UhAv3+xiijxZjyoBZQnblXs7yekQYwg/bqryeCCrBBmcn73pgbcsIBHhrzEYeZprWzOlcSi3qUr8zn/cwU5aaIgE7nCtYV5fRKaDf83qHadojdxNQuD6dddOMbHHF+YJJgG5GwJabZRJmo5UsOCG+88AzxDwyzY+7Xtv5I67U1R8ZeMUY3ODNFKT3TKK2B8k5R1SgoPxIswgCEkaW7VB6kUqb3LKIKteeNRmZYOoFRPpEfDaj1MvmS7DZyRSHgZIiqOzsKMsLbFevM+ja9ezCb0EdcgOEPmvNgy9GnknRDMgpGz5E6DzGE/xm3E37ifaklfeIPdQG43ja0SQnJH54ZRPL92ykdAHu3k93VKr+Mh21w7eZStYY/FlurtLtaiLUMDcFfm9gJQvJ2Zav+WCLU1Chyx0tBXwzFnAlVdkkWPnwhTawtHG/4JQAwPyHetA8IbiRbV3G2pMzVqBVMKyR61Wled1dTACgh7gJflzcmrKd2el2yuoMUikJOwRAYMygwoa3+a2dkj1U+YzHujaJZK+i2H0tUagV/ChNYAXMilGhHbSp1lXuVsbh18AZbengsvGYVngs="
+      }
+     },
+     "id": "prt_0bb6010ae001T04mIpeh42ht9t",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb600012001tZUh2usDbN9WAe"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9853,
+      "input": 9638,
+      "output": 36,
+      "reasoning": 179,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.00803475,
+     "id": "prt_0bb60117c001gm6TBOFplfrfyG",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb600012001tZUh2usDbN9WAe"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb5fffea0016XQVd2HTXaS2IQ",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00362385,
+    "tokens": {
+     "total": 11176,
+     "input": 2744,
+     "output": 63,
+     "reasoning": 191,
+     "cache": {
+      "write": 0,
+      "read": 8178
+     }
+    },
+    "modelID": "gemini-3.6-flash",
+    "providerID": "google",
+    "time": {
+     "created": 1789850030528,
+     "completed": 1789850033420
+    },
+    "finish": "stop",
+    "id": "msg_0bb6011c0001Vs57afhX9lKXh5",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "snapshot": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "type": "step-start",
+     "id": "prt_0bb601ba9001gzaXbVwLLZ9j2E",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb6011c0001Vs57afhX9lKXh5"
+    },
+    {
+     "type": "text",
+     "text": "Vamos começar com a pergunta **P1**:\n\n> **P1**: Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)?\n\nPor favor, forneça a resposta e a regra/fonte correspondente.",
+     "time": {
+      "start": 1789850033074,
+      "end": 1789850033146
+     },
+     "id": "prt_0bb601bb2001BSDgo2jQN4d0L6",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb6011c0001Vs57afhX9lKXh5"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "type": "step-finish",
+     "tokens": {
+      "total": 11176,
+      "input": 2744,
+      "output": 63,
+      "reasoning": 191,
+      "cache": {
+       "write": 0,
+       "read": 8178
+      }
+     },
+     "cost": 0.00362385,
+     "id": "prt_0bb601c96001Uda2EayIZr06uk",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb6011c0001Vs57afhX9lKXh5"
+    }
+   ]
+  },
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789850343246
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.6-flash"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "entrevistas/M1-grade.md",
+       "patch": "Index: entrevistas/M1-grade.md\n===================================================================\n--- entrevistas/M1-grade.md\t\n+++ entrevistas/M1-grade.md\t\n@@ -1,24 +1,24 @@\n # Entrevista: M1 — Grade de atividades\n \n | P-xx | Pergunta | Resposta | Fontes | Status |\n |---|---|---|---|---|\n-| P1 | Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)? | | | Pendente |\n-| P2 | O que define um `ENCONTRO_INVALIDO`? Existe duração mínima/máxima? Devem ser nos dias do evento? | | | Pendente |\n-| P3 | `CONFLITO_DE_SALA` exige intervalo entre atividades? `VAGAS_ACIMA_DA_CAPACIDADE` permite exceção? | | | Pendente |\n-| P4 | Quais campos são `CAMPO_NAO_EDITAVEL`? Quando a atividade é considerada `ATIVIDADE_JA_INICIADA`? | | | Pendente |\n-| P5 | Regras exatas de transição para `situacao` (`prevista`, `em_andamento`, `encerrada`) baseadas no relógio? | | | Pendente |\n-| P6 | O que acontece no cancelamento? Continua na listagem? Qual a `situacao`? Existe prazo limite? | | | Pendente |\n-| P7 | No `PATCH /atividades/:id`, o erro `VAGAS_ABAIXO_DOS_INSCRITOS` considera apenas confirmados ou inclui a lista de espera? | | | Pendente |\n-| P8 | No `GET /atividades`, os filtros `?dia` e `?tipo` são cumulativos? Como tratar atividades multi-dia no filtro? | | | Pendente |\n-| P9 | Como é calculado o campo `cargaHorariaMinutos`? Considera intervalos entre encontros ou apenas a soma das durações? | | | Pendente |\n-| P10 | Se a atividade já está cancelada, tentar cancelá-la de novo ou editá-la (`PATCH`) gera `ATIVIDADE_CANCELADA`? | | | Pendente |\n-| P11 | Como são calculados `ocupadas`, `vagasRestantes` e `emEspera`? `ocupadas` inclui convocadas? | | | Pendente |\n-| P12 | Uma atividade pode ter encontros que se sobrepõem no tempo (ex: dois encontros no mesmo horário)? | | | Pendente |\n-| P13 | Quais as regras de validação para `titulo` (tamanho mín/máx) e `vagas` (valor mínimo)? | | | Pendente |\n-| P14 | No `PATCH /atividades/:id`, o que acontece se a organização tentar alterar a `vagas` para um valor menor que a `capacidade` da sala, mas acima dos inscritos? | | | Pendente |\n-| P15 | Qual a tolerância para `FORA_DA_JANELA` em relação ao início e fim dos encontros? | | | Pendente |\n-| P16 | Qual a ordem de exibição dos resultados em `GET /salas` e `GET /atividades`? | | | Pendente |\n-| P17 | No `PATCH /atividades/:id`, é permitido alterar a sala (`salaId`) ou os encontros? Se sim, em quais condições? | | | Pendente |\n-| P18 | Como os IDs dos encontros (`enc_...`) devem ser gerados? Eles devem ser únicos por atividade ou por todo o sistema? | | | Pendente |\n-| P19 | Se `salaId` não existir no `POST` ou `PATCH`, o erro é `404` ou `422`? | | | Pendente |\n-| P20 | O endpoint `POST /atividades/:id/cancelamento` requer algum corpo de requisição em JSON ou deve ser chamado sem corpo? | | | Pendente |\n+| P1 | Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)? | Palestra tem exatamente 1 encontro; minicurso, de 2 a 5 | RN-102, RN-103 | Respondida |\n+| P2 | O que define um `ENCONTRO_INVALIDO`? Existe duração mínima/máxima? Devem ser nos dias do evento? | Cada encontro dura de 1 h a 4 h, começa e termina no mesmo dia (não atravessa a meia-noite), entre 19 e 23/10/2026, e os encontros da mesma atividade não se sobrepõem. Horários são de Brasília | RN-104, RN-105, RN-106 | Respondida |\n+| P3 | `CONFLITO_DE_SALA` exige intervalo entre atividades? `VAGAS_ACIMA_DA_CAPACIDADE` permite exceção? | Precisa de pelo menos 15 min entre um encontro e outro na mesma sala; atividade cancelada não conta. Vagas não têm exceção: de 1 até a capacidade da sala | RN-108, RN-107 | Respondida |\n+| P4 | Quais campos são `CAMPO_NAO_EDITAVEL`? Quando a atividade é considerada `ATIVIDADE_JA_INICIADA`? | Depois de criada, só título e vagas podem mudar. A atividade começou quando o relógio chega ao início do 1º encontro, inclusive; esse erro é só no cancelamento | RN-110, RN-112 | Respondida |\n+| P5 | Regras exatas de transição para `situacao` (`prevista`, `em_andamento`, `encerrada`) baseadas no relógio? | Calculada pelo relógio: prevista antes do início do 1º encontro; em andamento a partir dele; encerrada a partir do fim do último; cancelada vale acima de todas | RN-114 | Respondida |\n+| P6 | O que acontece no cancelamento? Continua na listagem? Qual a `situacao`? Existe prazo limite? | Vira cancelada, continua aparecendo na listagem, só pode cancelar antes de começar e o cancelamento é definitivo | RN-112, RN-113, RN-114, RN-115 | Respondida |\n+| P7 | No `PATCH /atividades/:id`, o erro `VAGAS_ABAIXO_DOS_INSCRITOS` considera apenas confirmados ou inclui a lista de espera? | Conta quem ocupa vaga: confirmadas + convocadas. Espera não conta | RN-111 | Respondida |\n+| P8 | No `GET /atividades`, os filtros `?dia` e `?tipo` são cumulativos? Como tratar atividades multi-dia no filtro? | São cumulativos. A atividade aparece se tiver algum encontro naquele dia, no horário de Brasília | RN-116 | Respondida |\n+| P9 | Como é calculado o campo `cargaHorariaMinutos`? Considera intervalos entre encontros ou apenas a soma das durações? | Soma das durações dos encontros, em minutos, sem os intervalos; a organização não informa e, se mandar, é ignorado | RN-109 | Respondida |\n+| P10 | Se a atividade já está cancelada, tentar cancelá-la de novo ou editá-la (`PATCH`) gera `ATIVIDADE_CANCELADA`? | Sim: atividade cancelada não é alterada nem cancelada de novo | RN-113 | Respondida |\n+| P11 | Como são calculados `ocupadas`, `vagasRestantes` e `emEspera`? `ocupadas` inclui convocadas? | ocupadas = confirmadas + convocadas; vagasRestantes = vagas − ocupadas; emEspera = quantos estão em espera | RN-111, contrato-api.md | Respondida |\n+| P12 | Uma atividade pode ter encontros que se sobrepõem no tempo (ex: dois encontros no mesmo horário)? | Não, os encontros da mesma atividade não se sobrepõem | RN-106 | Respondida |\n+| P13 | Quais as regras de validação para `titulo` (tamanho mín/máx) e `vagas` (valor mínimo)? | Título é obrigatório e não pode ser vazio, sem limite de tamanho. Vagas: número inteiro, mínimo 1 | RN-107, contrato-api.md, decisão técnica | Respondida |\n+| P14 | No `PATCH /atividades/:id`, o que acontece se a organização tentar alterar a `vagas` para um valor menor que a `capacidade` da sala, mas acima dos inscritos? | É permitido: vagas podem ficar entre as inscrições que ocupam vaga e a capacidade da sala | RN-107, RN-110, RN-111 | Respondida |\n+| P15 | Qual a tolerância para `FORA_DA_JANELA` em relação ao início e fim dos encontros? | Não é regra do M1; é do M3 | RN-301 | Respondida |\n+| P16 | Qual a ordem de exibição dos resultados em `GET /salas` e `GET /atividades`? | GET /atividades: pelo início do 1º encontro e, no empate, pelo título. GET /salas: na ordem dos dados iniciais | RN-115, decisão técnica | Respondida |\n+| P17 | No `PATCH /atividades/:id`, é permitido alterar a sala (`salaId`) ou os encontros? Se sim, em quais condições? | Não: sala e encontros não mudam depois de criada | RN-110, seção 7 | Respondida |\n+| P18 | Como os IDs dos encontros (`enc_...`) devem ser gerados? Eles devem ser únicos por atividade ou por todo o sistema? | Prefixo enc_ + 8 hexadecimais minúsculos, únicos em todo o sistema | contrato-api.md seção 1 | Respondida |\n+| P19 | Se `salaId` não existir no `POST` ou `PATCH`, o erro é `404` ou `422`? | salaId inexistente no POST dá 422 DADOS_INVALIDOS. No PATCH, qualquer mudança de sala dá CAMPO_NAO_EDITAVEL | contrato-api.md seção 1, RN-110, decisão técnica | Respondida |\n+| P20 | O endpoint `POST /atividades/:id/cancelamento` requer algum corpo de requisição em JSON ou deve ser chamado sem corpo? | Não precisa de corpo; se vier algum, é ignorado | decisão técnica | Respondida |\n",
+       "additions": 20,
+       "deletions": 20,
+       "status": "modified"
+      }
+     ]
+    },
+    "id": "msg_0bb64d74e001y3a8kkJDk4IY2t",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "Seguem as respostas de todas as pendentes. Registre cada uma na linha correspondente, sem alterar o texto, com a fonte na coluna Fontes, e mude o status para Respondida.\nP1: Palestra tem exatamente 1 encontro; minicurso, de 2 a 5 (RN-102, RN-103)\nP2: Cada encontro dura de 1 h a 4 h, começa e termina no mesmo dia (não atravessa a meia-noite), entre 19 e 23/10/2026, e os encontros da mesma atividade não se sobrepõem. Horários são de Brasília (RN-104, RN-105, RN-106)\nP3: Precisa de pelo menos 15 min entre um encontro e outro na mesma sala; atividade cancelada não conta. Vagas não têm exceção: de 1 até a capacidade da sala (RN-108, RN-107)\nP4: Depois de criada, só título e vagas podem mudar. A atividade começou quando o relógio chega ao início do 1º encontro, inclusive; esse erro é só no cancelamento (RN-110, RN-112)\nP5: Calculada pelo relógio: prevista antes do início do 1º encontro; em andamento a partir dele; encerrada a partir do fim do último; cancelada vale acima de todas (RN-114)\nP6: Vira cancelada, continua aparecendo na listagem, só pode cancelar antes de começar e o cancelamento é definitivo (RN-112, RN-113, RN-114, RN-115)\nP7: Conta quem ocupa vaga: confirmadas + convocadas. Espera não conta (RN-111)\nP8: São cumulativos. A atividade aparece se tiver algum encontro naquele dia, no horário de Brasília (RN-116)\nP9: Soma das durações dos encontros, em minutos, sem os intervalos; a organização não informa e, se mandar, é ignorado (RN-109)\nP10: Sim: atividade cancelada não é alterada nem cancelada de novo (RN-113)\nP11: ocupadas = confirmadas + convocadas; vagasRestantes = vagas − ocupadas; emEspera = quantos estão em espera (RN-111, contrato-api.md)\nP12: Não, os encontros da mesma atividade não se sobrepõem (RN-106)\nP13: Título é obrigatório e não pode ser vazio, sem limite de tamanho. Vagas: número inteiro, mínimo 1 (RN-107, contrato-api.md, decisão técnica)\nP14: É permitido: vagas podem ficar entre as inscrições que ocupam vaga e a capacidade da sala (RN-107, RN-110, RN-111)\nP15: Não é regra do M1; é do M3 (RN-301)\nP16: GET /atividades: pelo início do 1º encontro e, no empate, pelo título. GET /salas: na ordem dos dados iniciais (RN-115, decisão técnica)\nP17: Não: sala e encontros não mudam depois de criada (RN-110, seção 7)\nP18: Prefixo enc_ + 8 hexadecimais minúsculos, únicos em todo o sistema (contrato-api.md seção 1)\nP19: salaId inexistente no POST dá 422 DADOS_INVALIDOS. No PATCH, qualquer mudança de sala dá CAMPO_NAO_EDITAVEL (contrato-api.md seção 1, RN-110, decisão técnica)\nP20: Não precisa de corpo; se vier algum, é ignorado (decisão técnica) ",
+     "id": "prt_0bb64d74f001x7idDqnO5VliMV",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d74e001y3a8kkJDk4IY2t"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb64d74e001y3a8kkJDk4IY2t",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0223248,
+    "tokens": {
+     "total": 16907,
+     "input": 3679,
+     "output": 1589,
+     "reasoning": 3465,
+     "cache": {
+      "write": 0,
+      "read": 8174
+     }
+    },
+    "modelID": "gemini-3.6-flash",
+    "providerID": "google",
+    "time": {
+     "created": 1789850343264,
+     "completed": 1789850533292
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb64d760001WTwp6slW96W69z",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "snapshot": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "type": "step-start",
+     "id": "prt_0bb679e74001AWyZbp0WsVPIdR",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d760001WTwp6slW96W69z"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Processing All Responses**\n\nI've successfully received and processed all the provided answers for the pending questions (P1-P20). Each response has been logged precisely as submitted, the font source has been duly recorded in the \"Fontes\" column, and the status for each item has been updated to \"Respondida\".\n\n\n**Analyzing Response Content**\n\nI am now meticulously dissecting each response, focusing on items P1 through P20. My process involves pinpointing the exact response text and accurately extracting the source references. The \"Status\" field is being updated to \"Respondida\" for all processed entries.\n\n\n",
+     "time": {
+      "start": 1789850525307,
+      "end": 1789850532808
+     },
+     "id": "prt_0bb679e7b001h54D3YfwfQBkTf",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d760001WTwp6slW96W69z"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "tF5XnbYu3YmGjkVM",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/home/juliana/semana-academica/entrevistas/M1-grade.md",
+       "content": "# Entrevista: M1 — Grade de atividades\n\n| P-xx | Pergunta | Resposta | Fontes | Status |\n|---|---|---|---|---|\n| P1 | Qual o número mínimo e máximo de encontros permitidos para uma Palestra e para um Minicurso (`QUANTIDADE_DE_ENCONTROS`)? | Palestra tem exatamente 1 encontro; minicurso, de 2 a 5 | RN-102, RN-103 | Respondida |\n| P2 | O que define um `ENCONTRO_INVALIDO`? Existe duração mínima/máxima? Devem ser nos dias do evento? | Cada encontro dura de 1 h a 4 h, começa e termina no mesmo dia (não atravessa a meia-noite), entre 19 e 23/10/2026, e os encontros da mesma atividade não se sobrepõem. Horários são de Brasília | RN-104, RN-105, RN-106 | Respondida |\n| P3 | `CONFLITO_DE_SALA` exige intervalo entre atividades? `VAGAS_ACIMA_DA_CAPACIDADE` permite exceção? | Precisa de pelo menos 15 min entre um encontro e outro na mesma sala; atividade cancelada não conta. Vagas não têm exceção: de 1 até a capacidade da sala | RN-108, RN-107 | Respondida |\n| P4 | Quais campos são `CAMPO_NAO_EDITAVEL`? Quando a atividade é considerada `ATIVIDADE_JA_INICIADA`? | Depois de criada, só título e vagas podem mudar. A atividade começou quando o relógio chega ao início do 1º encontro, inclusive; esse erro é só no cancelamento | RN-110, RN-112 | Respondida |\n| P5 | Regras exatas de transição para `situacao` (`prevista`, `em_andamento`, `encerrada`) baseadas no relógio? | Calculada pelo relógio: prevista antes do início do 1º encontro; em andamento a partir dele; encerrada a partir do fim do último; cancelada vale acima de todas | RN-114 | Respondida |\n| P6 | O que acontece no cancelamento? Continua na listagem? Qual a `situacao`? Existe prazo limite? | Vira cancelada, continua aparecendo na listagem, só pode cancelar antes de começar e o cancelamento é definitivo | RN-112, RN-113, RN-114, RN-115 | Respondida |\n| P7 | No `PATCH /atividades/:id`, o erro `VAGAS_ABAIXO_DOS_INSCRITOS` considera apenas confirmados ou inclui a lista de espera? | Conta quem ocupa vaga: confirmadas + convocadas. Espera não conta | RN-111 | Respondida |\n| P8 | No `GET /atividades`, os filtros `?dia` e `?tipo` são cumulativos? Como tratar atividades multi-dia no filtro? | São cumulativos. A atividade aparece se tiver algum encontro naquele dia, no horário de Brasília | RN-116 | Respondida |\n| P9 | Como é calculado o campo `cargaHorariaMinutos`? Considera intervalos entre encontros ou apenas a soma das durações? | Soma das durações dos encontros, em minutos, sem os intervalos; a organização não informa e, se mandar, é ignorado | RN-109 | Respondida |\n| P10 | Se a atividade já está cancelada, tentar cancelá-la de novo ou editá-la (`PATCH`) gera `ATIVIDADE_CANCELADA`? | Sim: atividade cancelada não é alterada nem cancelada de novo | RN-113 | Respondida |\n| P11 | Como são calculados `ocupadas`, `vagasRestantes` e `emEspera`? `ocupadas` inclui convocadas? | ocupadas = confirmadas + convocadas; vagasRestantes = vagas − ocupadas; emEspera = quantos estão em espera | RN-111, contrato-api.md | Respondida |\n| P12 | Uma atividade pode ter encontros que se sobrepõem no tempo (ex: dois encontros no mesmo horário)? | Não, os encontros da mesma atividade não se sobrepõem | RN-106 | Respondida |\n| P13 | Quais as regras de validação para `titulo` (tamanho mín/máx) e `vagas` (valor mínimo)? | Título é obrigatório e não pode ser vazio, sem limite de tamanho. Vagas: número inteiro, mínimo 1 | RN-107, contrato-api.md, decisão técnica | Respondida |\n| P14 | No `PATCH /atividades/:id`, o que acontece se a organização tentar alterar a `vagas` para um valor menor que a `capacidade` da sala, mas acima dos inscritos? | É permitido: vagas podem ficar entre as inscrições que ocupam vaga e a capacidade da sala | RN-107, RN-110, RN-111 | Respondida |\n| P15 | Qual a tolerância para `FORA_DA_JANELA` em relação ao início e fim dos encontros? | Não é regra do M1; é do M3 | RN-301 | Respondida |\n| P16 | Qual a ordem de exibição dos resultados em `GET /salas` e `GET /atividades`? | GET /atividades: pelo início do 1º encontro e, no empate, pelo título. GET /salas: na ordem dos dados iniciais | RN-115, decisão técnica | Respondida |\n| P17 | No `PATCH /atividades/:id`, é permitido alterar a sala (`salaId`) ou os encontros? Se sim, em quais condições? | Não: sala e encontros não mudam depois de criada | RN-110, seção 7 | Respondida |\n| P18 | Como os IDs dos encontros (`enc_...`) devem ser gerados? Eles devem ser únicos por atividade ou por todo o sistema? | Prefixo enc_ + 8 hexadecimais minúsculos, únicos em todo o sistema | contrato-api.md seção 1 | Respondida |\n| P19 | Se `salaId` não existir no `POST` ou `PATCH`, o erro é `404` ou `422`? | salaId inexistente no POST dá 422 DADOS_INVALIDOS. No PATCH, qualquer mudança de sala dá CAMPO_NAO_EDITAVEL | contrato-api.md seção 1, RN-110, decisão técnica | Respondida |\n| P20 | O endpoint `POST /atividades/:id/cancelamento` requer algum corpo de requisição em JSON ou deve ser chamado sem corpo? | Não precisa de corpo; se vier algum, é ignorado | decisão técnica | Respondida |\n"
+      },
+      "output": "Wrote file successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "filepath": "/home/juliana/semana-academica/entrevistas/M1-grade.md",
+       "exists": true,
+       "truncated": false
+      },
+      "title": "entrevistas/M1-grade.md",
+      "time": {
+       "start": 1789850532795,
+       "end": 1789850532835
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "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"
+      }
+     },
+     "id": "prt_0bb67bba9001vbvm2dJY6Yj7VQ",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d760001WTwp6slW96W69z"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "218cd53700a0e9515578be45ab3d3e06311b8ddd",
+     "type": "step-finish",
+     "tokens": {
+      "total": 16907,
+      "input": 3679,
+      "output": 1589,
+      "reasoning": 3465,
+      "cache": {
+       "write": 0,
+       "read": 8174
+      }
+     },
+     "cost": 0.0223248,
+     "id": "prt_0bb67bd50001pE1st596Er8qTL",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d760001WTwp6slW96W69z"
+    },
+    {
+     "type": "patch",
+     "hash": "e597d24d202ad4c1be02dbb65ab4ffde7d567c3c",
+     "files": [
+      "/home/juliana/semana-academica/entrevistas/M1-grade.md"
+     ],
+     "id": "prt_0bb67bda5001EXzUDOmdLdm6XV",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb64d760001WTwp6slW96W69z"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb64d74e001y3a8kkJDk4IY2t",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0073647,
+    "tokens": {
+     "total": 17092,
+     "input": 8821,
+     "output": 35,
+     "reasoning": 0,
+     "cache": {
+      "write": 0,
+      "read": 8236
+     }
+    },
+    "modelID": "gemini-3.6-flash",
+    "providerID": "google",
+    "time": {
+     "created": 1789850533302,
+     "completed": 1789850537020
+    },
+    "finish": "stop",
+    "id": "msg_0bb67bdb6001j7yf1HvQE1Ox3r",
+    "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3"
+   },
+   "parts": [
+    {
+     "snapshot": "218cd53700a0e9515578be45ab3d3e06311b8ddd",
+     "type": "step-start",
+     "id": "prt_0bb67cbb2001emNL69A4tUNkiG",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb67bdb6001j7yf1HvQE1Ox3r"
+    },
+    {
+     "type": "text",
+     "text": "Todas as respostas foram registradas no arquivo `entrevistas/M1-grade.md` com suas respectivas fontes e com o status atualizado para **Respondida**.",
+     "time": {
+      "start": 1789850536887,
+      "end": 1789850536895
+     },
+     "id": "prt_0bb67cbb7001Ia27Cq7bolSQe5",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb67bdb6001j7yf1HvQE1Ox3r"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "218cd53700a0e9515578be45ab3d3e06311b8ddd",
+     "type": "step-finish",
+     "tokens": {
+      "total": 17092,
+      "input": 8821,
+      "output": 35,
+      "reasoning": 0,
+      "cache": {
+       "write": 0,
+       "read": 8236
+      }
+     },
+     "cost": 0.0073647,
+     "id": "prt_0bb67cbd6001UdkdG2T7Nd79KQ",
+     "sessionID": "ses_f44a0003cffeZ0RetvMdwWLsx3",
+     "messageID": "msg_0bb67bdb6001j7yf1HvQE1Ox3r"
+    }
+   ]
+  }
+ ]
+}

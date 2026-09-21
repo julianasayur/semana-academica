@@ -1,0 +1,1109 @@
+{
+ "info": {
+  "id": "ses_f4484944bffeZaDxAVTyICwTXs",
+  "slug": "quick-harbor",
+  "projectID": "f0e37ae0e184b898118e8c2e53af97bc0dab3160",
+  "directory": "/home/juliana/semana-academica",
+  "path": "",
+  "title": "Criação de specs/M1-grade.md",
+  "agent": "build",
+  "model": {
+   "id": "gemini-3.5-flash-lite",
+   "providerID": "google"
+  },
+  "version": "1.18.31",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0.07775071000000001,
+  "tokens": {
+   "input": 138954,
+   "output": 5372,
+   "reasoning": 7184,
+   "cache": {
+    "read": 155817,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1789851823028,
+   "updated": 1789852056218
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789851823075
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.5-flash-lite"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "specs/M1-grade.md",
+       "patch": "Index: specs/M1-grade.md\n===================================================================\n--- specs/M1-grade.md\t\n+++ specs/M1-grade.md\t\n@@ -0,0 +1,103 @@\n+# Spec — M1: Grade de atividades\n+\n+## 1. Objetivo\n+Permitir que a organização crie, altere e cancele atividades (palestras e minicursos) associadas a salas e horários válidos durante a Semana Acadêmica, e que participantes e organizadores consultem salas e atividades disponíveis.\n+\n+## 2. Fora de escopo\n+- Inscrições em atividades e lista de espera (tratado no M2).\n+- Registro de presença, QR code e presença manual (tratado no M3).\n+- Emissão de certificados e extrato de horas (tratado no M4).\n+- Painel gerencial, sem chance e bloqueios (tratado no M5).\n+- Criação de usuários e salas (dados iniciais fixos).\n+\n+## 3. Modelo\n+\n+### Atividade\n+- `id`: string (gerado, prefixo `atv_` + 8 hexadecimais minúsculos) — informado pelo sistema / gerado.\n+- `titulo`: string (obrigatório, não vazio) — informado pelo cliente.\n+- `tipo`: string (`palestra` ou `minicurso`) — informado pelo cliente.\n+- `salaId`: string (identificador da sala existente) — informado pelo cliente.\n+- `vagas`: inteiro (mínimo 1, teto na capacidade da sala) — informado pelo cliente.\n+- `encontros`: lista de Encontros (em ordem de início) — informado pelo cliente.\n+- `cargaHorariaMinutos`: inteiro — calculado (soma das durações dos encontros em minutos).\n+- `situacao`: string (`prevista`, `em_andamento`, `encerrada`, `cancelada`) — calculado pelo relógio.\n+- `ocupadas`: inteiro (confirmadas + convocadas) — calculado.\n+- `vagasRestantes`: inteiro (`vagas` - `ocupadas`) — calculado.\n+- `emEspera`: inteiro (quantidade de inscrições em espera) — calculado.\n+\n+### Encontro\n+- `id`: string (gerado, prefixo `enc_` + 8 hexadecimais minúsculos, único no sistema) — gerado.\n+- `inicio`: ISO 8601 com fuso — informado pelo cliente.\n+- `fim`: ISO 8601 com fuso — informado pelo cliente.\n+\n+### Sala\n+- `id`: string (`auditorio`, `sala-101`, `sala-102`, `lab-3`) — dados iniciais.\n+- `nome`: string — dados iniciais.\n+- `capacidade`: inteiro — dados iniciais.\n+\n+## 4. Endpoints\n+\n+- `GET /salas` (todos os usuários identificados) → `200 [Sala]`\n+- `GET /atividades` (todos os usuários identificados; filtros opcionais `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso`) → `200 [Atividade]`\n+- `GET /atividades/:id` (todos os usuários identificados) → `200 Atividade`\n+- `POST /atividades` (somente organização) → `201 Atividade`\n+- `PATCH /atividades/:id` (somente organização) → `200 Atividade`\n+- `POST /atividades/:id/cancelamento` (somente organização) → `200 Atividade`\n+\n+## 5. Regras\n+\n+- **R1 (Autenticação):** Toda rota do M1 exige o cabeçalho `X-Usuario` com um ID de usuário válido e existente. Se ausente ou inexistente, recusa com `401 USUARIO_DESCONHECIDO`. (P21, contrato-api.md)\n+- **R2 (Perfil de Organização):** As rotas de escrita (`POST /atividades`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que o usuário autenticado tenha papel `organizacao`. Se for `participante`, recusa com `403 SOMENTE_ORGANIZACAO`. (P22, RN-101, contrato-api.md)\n+- **R3 (Perfil de Leitura):** As rotas de leitura (`GET /salas`, `GET /atividades`, `GET /atividades/:id`) permitem acesso a qualquer usuário autenticado (`organizacao` ou `participante`). (P23, contrato-api.md)\n+- **R4 (Existência de Atividade):** Operações em atividades específicas (`GET /atividades/:id`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que a atividade exista. Se não existir, recusa com `404 NAO_ENCONTRADO`. (P24, contrato-api.md)\n+- **R5 (Corpo de Requisição):** Requisições com corpo malformado, não-JSON ou campos obrigatórios ausentes/com tipos inválidos geram `422 DADOS_INVALIDOS`. (contrato-api.md)\n+- **R6 (Ordem das Verificações):** A ordem de prioridade para verificação de erros é: 1º Identificação (401), 2º Perfil (403), 3º Existência (404), 4º Corpo (422 DADOS_INVALIDOS), e por último as regras de negócio específicas da atividade. (P25, contrato-api.md)\n+- **R7 (Quantidade de Encontros):** Palestras devem ter exatamente 1 encontro; minicursos devem ter de 2 a 5 encontros. Caso contrário, recusa com `422 QUANTIDADE_DE_ENCONTROS`. (P1, RN-102, RN-103)\n+- **R8 (Validade do Encontro):** Cada encontro deve durar entre 1 hora e 4 horas, começar e terminar no mesmo dia (sem atravessar a meia-noite), situar-se entre os dias 19 e 23/10/2026 (horário de Brasília). Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, RN-104, RN-105)\n+- **R9 (Sem Sobreposição na Atividade):** Os encontros de uma mesma atividade não podem se sobrepor no tempo. Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, P12, RN-106)\n+- **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)\n+- **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)\n+- **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)\n+- **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)\n+- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)\n+- **R15 (Atividade Já Iniciada no Cancelamento):** Uma atividade só pode ser cancelada antes de iniciar. A atividade é considerada iniciada quando o relógio atinge o início do primeiro encontro (inclusive). Se já iniciou, recusa com `422 ATIVIDADE_JA_INICIADA`. (P4, P6, RN-112)\n+- **R16 (Atividade Cancelada):** Uma atividade cancelada não pode ser alterada (`PATCH`) nem cancelada novamente. Tentativas recusam com `422 ATIVIDADE_CANCELADA`. (P10, RN-113)\n+- **R17 (Vagas Abaixo dos Inscritos no PATCH):** Na alteração de vagas (`PATCH /atividades/:id`), o novo número de vagas pode ficar entre o total de ocupantes (confirmadas + convocadas) e a capacidade da sala. Se o número de vagas for menor que as ocupações atuais, recusa com `409 VAGAS_ABAIXO_DOS_INSCRITOS`. (P7, P14, RN-111)\n+- **R18 (Carga Horária Calculada):** O campo `cargaHorariaMinutos` é calculado pela soma das durações dos encontros em minutos, desconsiderando intervalos. Se a organização enviar esse campo no corpo, ele é ignorado. (P9, RN-109)\n+- **R19 (IDs de Encontros):** Os IDs de encontros gerados pelo sistema seguem o formato `enc_` seguido de 8 hexadecimais minúsculos, sendo únicos em todo o sistema. (P18, contrato-api.md)\n+- **R20 (Cancelamento Sem Corpo):** O endpoint `POST /atividades/:id/cancelamento` não requer corpo de requisição; se algum corpo for enviado, ele é ignorado. (P20)\n+- **R21 (Filtros de Listagem):** No `GET /atividades`, os filtros `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso` são cumulativos. Uma atividade aparece se possuir pelo menos um encontro no dia especificado (no fuso de Brasília) e corresponder ao tipo, quando informados. (P8, RN-116)\n+- **R22 (Ordenação de Resultados):** No `GET /atividades`, os resultados são ordenados pelo horário de início do 1º encontro e, em caso de empate, pelo título em ordem alfabética. No `GET /salas`, os resultados seguem a ordem dos dados iniciais. (P16, RN-115)\n+- **R23 (Situação Calculada):** A situação da atividade é calculada dinamicamente pelo relógio: `prevista` (antes do início do 1º encontro), `em_andamento` (a partir do início do 1º encontro até o fim do último encontro), `encerrada` (após o fim do último encontro), e `cancelada` (sobrepõe todas as outras se a atividade foi cancelada). (P5, P6, RN-114)\n+- **R24 (Métrica de Ocupação):** Os campos de métricas são calculados da seguinte forma: `ocupadas` = inscrições confirmadas + convocadas; `vagasRestantes` = `vagas` - `ocupadas`; `emEspera` = contagem de inscrições em espera. (P11, RN-111, contrato-api.md)\n+\n+## 6. Critérios de aceite\n+\n+1. (R1) GET /salas sem cabeçalho `X-Usuario` ou com ID inexistente → 401 `USUARIO_DESCONHECIDO`.\n+2. (R2) POST /atividades por usuário com papel `participante` → 403 `SOMENTE_ORGANIZACAO`.\n+3. (R3) GET /salas por usuário com papel `participante` → 200 `[Sala]`.\n+4. (R4) GET /atividades/atv_inexistente → 404 `NAO_ENCONTRADO`.\n+5. (R6, R1) POST /atividades com usuário inexistente → 401 `USUARIO_DESCONHECIDO` (verificação antes de perfil, existência e corpo).\n+6. (R7) POST /atividades com palestra tendo 2 encontros → 422 `QUANTIDADE_DE_ENCONTROS`.\n+7. (R8) POST /atividades com encontro durando 5 horas → 422 `ENCONTRO_INVALIDO`.\n+8. (R9) POST /atividades com dois encontros da mesma atividade sobrepostos no tempo → 422 `ENCONTRO_INVALIDO`.\n+9. (R10) POST /atividades com conflito de horário na mesma sala (menos de 15 min de intervalo) → 409 `CONFLITO_DE_SALA`.\n+10. (R11) POST /atividades com vagas superior à capacidade da sala (ex: 50 vagas na Sala 101) → 422 `VAGAS_ACIMA_DA_CAPACIDADE`.\n+11. (R12) POST /atividades com `salaId` inexistente → 422 `DADOS_INVALIDOS`.\n+12. (R13) POST /atividades com `titulo` vazio → 422 `DADOS_INVALIDOS`.\n+13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n+14. (R15) POST /atividades/:id/cancelamento com relógio após o início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.\n+15. (R16) PATCH /atividades/:id em atividade já cancelada → 422 `ATIVIDADE_CANCELADA`.\n+16. (R17) PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais (confirmadas + convocadas) → 409 `VAGAS_ABAIXO_DOS_INSCRITOS`.\n+17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.\n+18. (R21) GET /atividades?dia=2026-10-19&tipo=minicurso retornando apenas minicursos do dia especificado.\n+19. (R23) GET /atividades mostrando situação `prevista`, `em_andamento`, `encerrada` ou `cancelada` conforme o relógio de teste.\n+\n+## 7. Como isto será verificado\n+A verificação será feita por meio de testes de integração HTTP na API Express, utilizando a costura externa `criarServidor()` com `MODO_TESTE=1`, manipulando o relógio via `PUT /_teste/relogio` e reiniciando o estado via `POST /_teste/reset`.\n+\n+## 8. Fatias de entrega\n+\n+1. **Fatia 1 (Leitura básica e autenticação):** GET /salas, GET /atividades, GET /atividades/:id, validação de cabeçalho `X-Usuario` (R1, R3, R4, R6, R21, R22, R23).\n+2. **Fatia 2 (Criação de atividades e validações):** POST /atividades, restrição de organização (R2), quantidade de encontros (R7), validade de encontros (R8, R9), conflito de sala/intervalo (R10), capacidade (R11), sala inválida (R12), título (R13), cálculo de carga horária e IDs (R18, R19).\n+3. **Fatia 3 (Alteração, cancelamento e métricas):** PATCH /atividades/:id (R14, R17), POST /atividades/:id/cancelamento (R15, R16, R20), e cálculo de métricas de ocupação (R24).\n",
+       "additions": 103,
+       "deletions": 0,
+       "status": "added"
+      }
+     ]
+    },
+    "id": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "Use a skill to-spec. Escreva specs/M1-grade.md a partir de entrevistas/M1-grade.md. Cada regra cita a pergunta (P-xx) e, se houver, a regra do documento (RN-xxx). ",
+     "id": "prt_0bb7b6be6001fmWmPcXWNYFfIE",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b6be3001Sq9XutFZzWNuWl"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0032959,
+    "tokens": {
+     "total": 9791,
+     "input": 9628,
+     "output": 16,
+     "reasoning": 147,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851823113,
+     "completed": 1789851826675
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7b6c090015OjD5P0ZDVlq00",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-start",
+     "id": "prt_0bb7b78ae001r3u7cEUXCjz7YB",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b6c090015OjD5P0ZDVlq00"
+    },
+    {
+     "type": "tool",
+     "tool": "skill",
+     "callID": "rrSAxKeVuD2Hcp8n",
+     "state": {
+      "status": "completed",
+      "input": {
+       "name": "to-spec"
+      },
+      "output": "<skill_content name=\"to-spec\">\n# Skill: to-spec\n\n# A conversa vira contrato\n\nVocê já tem tudo o que precisa: está na conversa. **Não entreviste de novo.** Sua\ntarefa é escrever, num arquivo, o que já foi decidido — e nada além.\n\nRegra que ninguém decidiu **não entra**. Se faltar alguma coisa para a spec ficar de pé,\npare e pergunte só aquilo. Não preencha buraco com \"geralmente é assim\".\n\n## Onde escrever\n\n`spec-<recurso>.md`, na raiz do projeto. Um arquivo por recurso.\n\n## Antes de escrever\n\nLeia o repositório: convenções, vocabulário, nomes que já existem. A spec fala a língua\ndo projeto — se o código chama de `leitor`, a spec não inventa `usuário`.\n\nDecida também **onde isto vai ser verificado**. Prefira a costura mais externa que já\nexistir (aqui: HTTP, pelo `criarServidor()`). Quanto menos pontos de teste novos, melhor.\n\n## Modelo\n\n```markdown\n# Spec — <recurso>\n\n## 1. Objetivo\nUm parágrafo: que problema isto resolve, na visão de quem usa.\n\n## 2. Fora de escopo\nLista do que este recurso NÃO faz. Isto é tão contrato quanto o resto — é aqui que\nse recusa código que ninguém pediu.\n\n## 3. Modelo\nOs campos da entidade, com tipo e origem (informado pelo cliente / calculado / derivado).\nCampo derivado nunca é guardado.\n\n## 4. Endpoints\nMétodo, caminho, corpo esperado, status de sucesso.\n\n## 5. Regras\nNumeradas: R1, R2, R3… Uma regra por linha de decisão, cada uma com o número, o limite\nou o valor exato que foi decidido, e o status HTTP de recusa quando houver.\n\nToda regra precisa ser observável de fora. \"O sistema deve ser rápido\" não é regra.\n\"Devolver depois da data prevista cobra 1,50 por dia inteiro de atraso, teto de 30\" é.\n\nQuando duas regras podem recusar a mesma operação, diga qual vale primeiro.\n\n## 6. Critérios de aceite\nLista numerada de cenários concretos, cada um apontando a regra que ele prova:\n\n1. (R1, R3) POST /x com dados válidos → 201, campo `y` igual a Z.\n\nRegra sem pelo menos um critério é regra sem prova. Volte e escreva o critério.\n\n## 7. Como isto será verificado\nA costura (interface) usada nos testes e por quê.\n\n## 8. Fatias de entrega\nA ordem de implementação, em fatias verticais. Cada fatia é um conjunto pequeno de\nregras que já dá para rodar e verificar sozinho.\n```\n\n## Depois de escrever\n\nMostre ao usuário a lista das regras numeradas — só os números e uma linha cada — e\npergunte se falta alguma. É a última chance de corrigir barato.\n\nBase directory for this skill: /home/juliana/semana-academica/.opencode/skills/to-spec\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n\n</skill_files>\n</skill_content>",
+      "metadata": {
+       "name": "to-spec",
+       "dir": "/home/juliana/semana-academica/.opencode/skills/to-spec",
+       "truncated": false
+      },
+      "title": "Loaded skill: to-spec",
+      "time": {
+       "start": 1789851826387,
+       "end": 1789851826423
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EpEFCo4FAWkUfRN6q1SEk/xeQwkpw0/ZcPj0WwEDA9lyyfi+3hIVGI2MnNm17+Qj8JmMN1OR327EkXsVgyPbjIc2VAoUu2yu/bZL1zEwnYjjxzETl5GA+6huezUWez9azp4S4Wu/bw8s83VmRlLMOWCgvdEAgsvJ3/Ee0XPt5KTeWOEJ3NlTHTmuIxhQA61a+ETzHaThCcOLr4UUahFU+NYAvj8unZxuicUsH7Mjt41J4/RLXnNpek787Tut9rJ0qQiatySCWJAUcoFI28GxtLMnv7vcpphVbR0Xe0CTPW2WiI6R0U5oz6fJMOeOzJkb7H0nGoms3lkSBv2SsedBTvF/8zFegHVPjUClmgnfpXALYAq9RoKCtboYtIbLOA7/GAu8Si1/YrSADDFq/VWsyE95enJVuktHwXmwHw4ojNtRUycOlj+GJACoMjbRQ1qsSmChvUH4xifpQLoScZyo8ylnqLhnYm98dAxBL1nxycMiE7PktCOquZ/8/DyRxoUFwQYRQ1uQA56MI56DZFJf57prLWdsNPPQA3boICTT2KuxW2xCyzc49fgkzJ1Amiv+/6yrtzt+x0Mec5ebECjxJWE4XrRqUqmCUUwddxcKiM/s3qPKqcPt3q2B0UVnnOn7JGrsZOr38Xh4IjjGRu/bkeCciMe+TcaoGuIFP+SPxD6J0KgH/PmhnN1R8YcOYPyo8KRjqcgOQZYZDV+sHo7vPBlrSu3XTA6uYBgCqQqnQFT1ZFpgTCR5CraJ4V2YiUNZ3gIMySMcpYh1NkHdciKIj7/3aivQj+3c/t/GvmohwcKynEEJ78DvI9wDXcBdZrq8hxDVTElcXozLSaad0F2Nun1QwD6Mr7KYCXt84fIPsv8u3bOQ"
+      }
+     },
+     "id": "prt_0bb7b78b9001zVct1e0henFmTL",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b6c090015OjD5P0ZDVlq00"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 9791,
+      "input": 9628,
+      "output": 16,
+      "reasoning": 147,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0032959,
+     "id": "prt_0bb7b7978001Z1I4TAg885vIre",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b6c090015OjD5P0ZDVlq00"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0036392,
+    "tokens": {
+     "total": 10752,
+     "input": 10564,
+     "output": 36,
+     "reasoning": 152,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851826681,
+     "completed": 1789851828759
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7b79f9001CgnZk4ohQx2Ehh",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-start",
+     "id": "prt_0bb7b7fca001MF8y3QbVCFWU8j",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b79f9001CgnZk4ohQx2Ehh"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "FoVqfZDE5yd5AQoT",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/home/juliana/semana-academica/entrevistas/M1-grade.md"
+      },
+      "output": "[6614 caracteres omitidos]",
+      "title": "entrevistas/M1-grade.md",
+      "time": {
+       "start": 1789851828199,
+       "end": 1789851828228
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EpgFCpUFAWkUfRMbfugzcBJju+m2qQAC6bbaYgYiGr8uKC6u7LYh98qEU6RYhDS/EemNGNkDhEmbtZQK5nqw8cflGUudJhBTQGlAnGl+a5N1U1mK0S/Vf1QE6Ke2hDfBHza5h/zW89PfZEHOxTz/ulFegfzaw3D0wjQ3p7HCOhOTNWFmQiFFtLamV/zsQHJktAlUUTVif8CVgJdZOpDzIl664mbfMoYXpFT4dIKG/nyGu8Y+WMhklwefXDycM/1IAefc1lVbfx8fkH6u1PUP+DPL63gsVa1tpp7dagAS2ap/sRv2nwm4U5LYGl2C2tqX5pTYHMK8LULwkvOjQMR3l7kdWNU/7fHdrYoNTLPR1KcAC6TNbWbAVyTK1+LDU7cOXBkMtjhVIQxwDS6RrOF8h63Rjy2fVbX5FoiB6O1vWBGM4MF1Auo4Yqz36Lo+WFEcOsYkFU1manc+fShBJOWS0HXen8B0/Vgv8m3dEi2GFssRIHX1OaPhifJB9HxHISWFH0ZAj2tr+gjVGyWk2KawohvfCITscPjOTEI/8M5XaF88w7mNjOMuE7BCiu284czT7x2ANVHhTuYXfmUHXu4db3p7ZvvoZ3DGrCM0Zb70RXmqu1rcXgrFxdsoMWwiLoAKS8c8rqPjYlwYsBqkPT1zXreIz4TZasZN0RuQx+h4qOEiA5H7LXJMJNuFYyCUnpTJjq3v4FXEwjYq3g1MWhgTSvszfLLon8F+xDb4VCcgTcziy/9SAt3EgOgnkeAk0eJci+m21tyLestSZjmB6whUTzlxSZExKaJ5/ZgC+0qWqk/UzNKNMqbtGeqzkSI/54JLfDZhodfS5chvNW0/04m+zKYSRFh66zIentIdV4r2V2XOGU6oBWA4KRPz8A=="
+      }
+     },
+     "id": "prt_0bb7b7fd3001FIf9Q74Bl1vFyV",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b79f9001CgnZk4ohQx2Ehh"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10752,
+      "input": 10564,
+      "output": 36,
+      "reasoning": 152,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0036392,
+     "id": "prt_0bb7b8084001fyGYfh3gCGo0vO",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b79f9001CgnZk4ohQx2Ehh"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0039672,
+    "tokens": {
+     "total": 12894,
+     "input": 12849,
+     "output": 15,
+     "reasoning": 30,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851828783,
+     "completed": 1789851830468
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7b822f0017f0X1ktzxuIuQ3",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-start",
+     "id": "prt_0bb7b8817001W4rE8qVFXtJs7q",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b822f0017f0X1ktzxuIuQ3"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "ngnNYtFQw8WKYSHi",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "**/*"
+      },
+      "output": "[8412 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1789851830310,
+       "end": 1789851830332
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EuoBCucBAWkUfRPmxQdyKQihDt6aEKfTg9DSYZnATFE6Hh+xc5jtBLdD1c1wwNHiegaW13UkDj9P9dWlCWFXMgkyc7c5vXk9gl+CSbFVj2q+OajY4ovyRfJd8xpZ3BKPJIYvzMteJD/QTj6s721tf80dvLHEYRwBebyGngyAhCC7SKOYtR0vBty1pEpAQRdQOi4v2WHDzpn8CPU5butlE9LcBx1f9YCz8wjX6v7lHsYgrGynTASiLErjusDOQsMDZUNNLEJcimo3DuxKzGx+rYJ2T0OAlfeOdp3tbChKqualyk+4eH4UVAYMahDK"
+      }
+     },
+     "id": "prt_0bb7b881d001UaMgtjvWnRzx0z",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b822f0017f0X1ktzxuIuQ3"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 12894,
+      "input": 12849,
+      "output": 15,
+      "reasoning": 30,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0039672,
+     "id": "prt_0bb7b887a001QGyJnhwbcshEiA",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b822f0017f0X1ktzxuIuQ3"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.005054,
+    "tokens": {
+     "total": 16238,
+     "input": 16155,
+     "output": 39,
+     "reasoning": 44,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851830474,
+     "completed": 1789851831987
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7b88ca001oj70v2bDCTkPqS",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-start",
+     "id": "prt_0bb7b8e1a001rnamUx7mxaJoFl",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b88ca001oj70v2bDCTkPqS"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "UWrU2PihZmPQp6dT",
+     "state": {
+      "status": "completed",
+      "input": {
+       "limit": 2000,
+       "filePath": "/home/juliana/semana-academica/contrato-api.md"
+      },
+      "output": "[13877 caracteres omitidos]",
+      "title": "contrato-api.md",
+      "time": {
+       "start": 1789851831853,
+       "end": 1789851831868
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "ErMCCrACAWkUfRMxgsk+7heAzxqrFB1aV5CEtS6OvbFSBnLOSWQtk9DJhTdW+nQZU1QtO8fRNVj/aa2NUzrije0Tj4J9amMx8TqUfX79KXZcbdbo0NKGXYVi8bkGO2AVN5neZ1QM56UmshHKZSgajGj6z9eMRuT04KmeHd6B4p6B74AFnRxHDgRSsyF4As04oK5GoutNyk5RBdUId01+NO1x3T8dPWmtoZ+VPoN3H1uPs9kLHiCUD1ttWVOUMl1d/XF4++rja8Op3PJHYZqaSSiV5B1zJWzfeM4qp4guxTbMmNDILbv7i7HU5pDULF8+DddlFxlrrLJw16t0JZcskJ8ekeMJu9u0fZeKhz+B191Cp4ZVXEzSB/GhJ7OWPbMGaPXUJOBaR24GAfLD2FLwoujWWKeOsg=="
+      }
+     },
+     "id": "prt_0bb7b8e1f001dtXxukchBH6dvc",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b88ca001oj70v2bDCTkPqS"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-finish",
+     "tokens": {
+      "total": 16238,
+      "input": 16155,
+      "output": 39,
+      "reasoning": 44,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.005054,
+     "id": "prt_0bb7b8e7c001v9RA1IDKDNJKW6",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b88ca001oj70v2bDCTkPqS"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.030894,
+    "tokens": {
+     "total": 31766,
+     "input": 22055,
+     "output": 3706,
+     "reasoning": 6005,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851831993,
+     "completed": 1789851856297
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7b8eb8001DBCb5E4EIMyLIY",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "type": "step-start",
+     "id": "prt_0bb7b96e3001cgJdXK7MO0QUB2",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b8eb8001DBCb5E4EIMyLIY"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Analyzing the prompt's structure**\n\nI'm currently dissecting the prompt. My focus is the structure `to-spec` demands. The goal is crafting `specs/M1-grade.md` from `entrevistas/M1-grade.md`, citing questions (P-xx) and rules (RN-xxx). I'm looking at how the provided files interrelate.\n\n\n**Defining the specification structure**\n\nI've solidified the markdown structure for the specification document. I'm focusing on \"spec\" sections: objective, scope exclusions, data model, endpoints, rules, acceptance criteria, verification method, and delivery slices. Each section will be carefully crafted to meet all stated criteria. I'm particularly attentive to how rules should link to questions and existing document rules.\n\n\n**Prioritizing Implementation Slices**\n\nI'm now focusing on a vertical slice approach for implementation, defining small, independently verifiable rule sets. I've begun analyzing the M1-Grade-related questions in `entrevistas/M1-grade.md`. For instance, I'm examining how to implement the logic for `QUANTIDADE_DE_ENCONTROS`, `ENCONTRO_INVALIDO`, `CONFLITO_DE_SALA` and `VAGAS_ACIMA_DA_CAPACIDADE` based on associated rules like RN-102, RN-103, and others to guide the initial iteration.\n\n\n**Refining Specific Rules**\n\nI am now focusing on refining the rules around specific scenarios, particularly error codes and status transitions. I'm focusing on RN-110, RN-112, RN-114, RN-113, RN-115 for the IDADE_JA_INICIADA error and associated situations. I am paying close attention to the rules regarding filters for the GET activities endpoint (RN-116), the calculation of cargaHorariaMinutos (RN-109), and how activities transition to a \"cancelled\" state. I am considering edge cases like vagas below inscritos.\n\n\n**Clarifying Rule Interactions**\n\nI'm now focusing on refining the specifics of rules and how they interact. Specifically, I'm examining RN-106 (no overlapping meetings for the same activity) and the data model implications for `ocupadas`, `vagasRestantes`, and `emEspera` (RN-111). I'm also analyzing title and vacancy validation, (RN-107). I've noted that RN-301 (\"fora da janela\") is M3-related, not M1, and I am solidifying order requirements, as per RN-115, and initial data order.\n\n\n**Defining Error Code Responses**\n\nI'm now integrating error code responses from the technical decisions and the `contrato-api.md` file. I am working on how to incorporate logic around the `CAMPO_NAO_EDITAVEL` for PATCH operations (P17, P19), the generation of meeting IDs with the `enc_...` prefix (P18), and the authentication and authorization flows (P21, P22). I will make sure the response for cancel requests (P20) is streamlined.\n\n\n**Integrating API Specifications**\n\nI am now focusing on integrating API specifications to ensure error handling and permissions are correct. I'm adding `GET` endpoints specifications. I am also mapping error codes, such as `404 NAO_ENCONTRADO` for non-existent activities (P24), and order of error handling (P25). I will apply this to `specs/M1-grade.md`, ensuring all rules are properly cited (P-xx, RN-xxx).\n\n\n**Drafting the initial content**\n\nI'm now drafting the initial markdown content for `specs/M1-grade.md`. I'm starting with the foundational sections: objective, scope exclusions, and data model for the `Atividade` entity. I'm focusing on defining the essential fields like `id`, `titulo`, `tipo`, `salaId`, and `vagas`, and specifying their constraints as per the requirements.\n\n\n**Defining Data Model Details**\n\nI'm now zeroing in on defining the precise data model components. I'm focusing on the `Atividade` entity and its calculated fields: `cargaHorariaMinutos`, `situacao`, `ocupadas`, `vagasRestantes`, and `emEspera`. I'm detailing the `Encontro` structure, including its generated `id` with the `enc_` prefix, and the structure of `Sala` records and attributes. I'm working to fully specify GET endpoints.\n\n\n**Specifying API endpoints**\n\nI'm now detailing the GET endpoints. I'm focusing on their response codes and authorization requirements. I'm specifying error conditions. I'm including `GET /atividades/:id` and authenticating `X-Usuario` via 401 and 403 status responses. The POST, PATCH, and cancellation endpoints require organization roles, as per the rules.\n\n\n\n**Prioritizing error handling**\n\nI am now prioritizing error handling across all API endpoints. I am defining specific response codes, such as 404 for non-existent activities and 422 for invalid data or incorrect numbers of meetings. I am also working on authorization requirements and validating the request body format for data integrity.\n\n\n**Defining Meeting Validation**\n\nI'm now focusing on meeting validation rules. I'm prioritizing `ENCONTRO_INVALIDO` errors, specifically rules RN-102, RN-103, RN-104, and RN-105 concerning meeting duration, date range, and same-day constraint. I am incorporating RN-106 (no overlap), RN-108 (room conflicts), and capacity checks (RN-101, RN-108) with 409 and 422 error codes.\n\n\n**Refining Data Validation**\n\nI'm now integrating validation rules for POST and PATCH requests. I'm focusing on handling cases where `salaId` is missing or invalid in POST requests, returning a 422 error. I'm also ensuring title validation, where an empty title in POST should also trigger a 422. I am focusing on preventing updates to `salaId` or `encontros` via PATCH and blocking cancellation of an activity that has already started.\n\n\n\n**Finalizing endpoint details**\n\nI'm now integrating validation rules for POST and PATCH requests and the cancellation endpoint. I'm prioritizing `409 VAGAS_ABAIXO_DOS_INSCRITOS` for PATCH when vagas drop below occupancy. I am finalizing the calculation for `cargaHorariaMinutos`, and ensuring the system generates meeting IDs. I am also making sure the cancellation endpoint accepts no body. Finally, I am ensuring the filter structure for list endpoints is correct.\n\n\n\n**Defining Activity Logic**\n\nI'm now focusing on implementing the specific business logic, including meeting constraints (RN-116), activity situation calculations (RN-114), and result ordering (RN-115). I am also working on `ocupadas`, `vagasRestantes`, and `emEspera` (RN-111). I am making sure the logic for activity situation ('prevista', 'em_andamento', 'encerrada', 'cancelada') is correct.\n\n\n\n**Defining Acceptance Criteria**\n\nI'm now integrating the acceptance criteria (R1-R11) from the provided scenarios. I am focusing on HTTP status codes and error messages for GET, POST, and authentication-related requests. This helps ensure proper response to specific user roles and error conditions.\n\nI'm prioritizing cases that relate to 401, 403, 404 and 422 HTTP responses.\n\n\n**Integrating Acceptance Criteria Details**\n\nI am now focusing on integrating the final acceptance criteria (R12-R23) into the specifications. I'm prioritizing cases with specific HTTP status codes (422, 409) and error messages. I've incorporated the logic for `DADOS_INVALIDOS` when `salaId` is invalid (R12), or `titulo` is empty (R13).\nI am now finalizing the details for `CAMPO_NAO_EDITAVEL`, the cases for meeting duration, date range, and same-day constraint.\n\n\n**Defining Test Implementation**\n\nI'm now detailing test implementation via HTTP integration tests on the Express API, using external stitching with `criarServidor()` and `MODO_TESTE=1`. I'm focusing on clock manipulation via `PUT /_teste/relogio` and state resets via `POST /_teste/reset`, ensuring accurate testing scenarios.\n\nI am also making sure I have a `Fatia 1 (Leitura básica e autenticação)` containing `GET /salas`, `GET /atividades`, `GET /atividades/:id`, with validation of header `X-Usuario` (R1, R3, R4, R6, R21, R22, R23).\nI am also making sure I have a `Fatia 2 (Criação de atividades e validações)` containing `POST /atividades`, with an organization restriction (R2), quantity of meetings (R7), meeting validity (R8, R9), room/interval conflict (R10), capacity (R11), invalid room (R12), title (R13), calculation of workload and IDs (R18, R19).\nFinally, I am making sure I have a `Fatia 3 (Alteração, cancelamento e métricas)` containing `PATCH /atividades/:id` (R14, R17), `POST /atividades/:id/cancelamento` (R15, R16, R20), and calculation of occupation metrics (R24).\n\n\n",
+     "time": {
+      "start": 1789851834087,
+      "end": 1789851855934
+     },
+     "id": "prt_0bb7b96e7001CO4he5Y2gn5u1M",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b8eb8001DBCb5E4EIMyLIY"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "77aWx4vI7HJoLCTJ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "content": "# Spec — M1: Grade de atividades\n\n## 1. Objetivo\nPermitir que a organização crie, altere e cancele atividades (palestras e minicursos) associadas a salas e horários válidos durante a Semana Acadêmica, e que participantes e organizadores consultem salas e atividades disponíveis.\n\n## 2. Fora de escopo\n- Inscrições em atividades e lista de espera (tratado no M2).\n- Registro de presença, QR code e presença manual (tratado no M3).\n- Emissão de certificados e extrato de horas (tratado no M4).\n- Painel gerencial, sem chance e bloqueios (tratado no M5).\n- Criação de usuários e salas (dados iniciais fixos).\n\n## 3. Modelo\n\n### Atividade\n- `id`: string (gerado, prefixo `atv_` + 8 hexadecimais minúsculos) — informado pelo sistema / gerado.\n- `titulo`: string (obrigatório, não vazio) — informado pelo cliente.\n- `tipo`: string (`palestra` ou `minicurso`) — informado pelo cliente.\n- `salaId`: string (identificador da sala existente) — informado pelo cliente.\n- `vagas`: inteiro (mínimo 1, teto na capacidade da sala) — informado pelo cliente.\n- `encontros`: lista de Encontros (em ordem de início) — informado pelo cliente.\n- `cargaHorariaMinutos`: inteiro — calculado (soma das durações dos encontros em minutos).\n- `situacao`: string (`prevista`, `em_andamento`, `encerrada`, `cancelada`) — calculado pelo relógio.\n- `ocupadas`: inteiro (confirmadas + convocadas) — calculado.\n- `vagasRestantes`: inteiro (`vagas` - `ocupadas`) — calculado.\n- `emEspera`: inteiro (quantidade de inscrições em espera) — calculado.\n\n### Encontro\n- `id`: string (gerado, prefixo `enc_` + 8 hexadecimais minúsculos, único no sistema) — gerado.\n- `inicio`: ISO 8601 com fuso — informado pelo cliente.\n- `fim`: ISO 8601 com fuso — informado pelo cliente.\n\n### Sala\n- `id`: string (`auditorio`, `sala-101`, `sala-102`, `lab-3`) — dados iniciais.\n- `nome`: string — dados iniciais.\n- `capacidade`: inteiro — dados iniciais.\n\n## 4. Endpoints\n\n- `GET /salas` (todos os usuários identificados) → `200 [Sala]`\n- `GET /atividades` (todos os usuários identificados; filtros opcionais `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso`) → `200 [Atividade]`\n- `GET /atividades/:id` (todos os usuários identificados) → `200 Atividade`\n- `POST /atividades` (somente organização) → `201 Atividade`\n- `PATCH /atividades/:id` (somente organização) → `200 Atividade`\n- `POST /atividades/:id/cancelamento` (somente organização) → `200 Atividade`\n\n## 5. Regras\n\n- **R1 (Autenticação):** Toda rota do M1 exige o cabeçalho `X-Usuario` com um ID de usuário válido e existente. Se ausente ou inexistente, recusa com `401 USUARIO_DESCONHECIDO`. (P21, contrato-api.md)\n- **R2 (Perfil de Organização):** As rotas de escrita (`POST /atividades`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que o usuário autenticado tenha papel `organizacao`. Se for `participante`, recusa com `403 SOMENTE_ORGANIZACAO`. (P22, RN-101, contrato-api.md)\n- **R3 (Perfil de Leitura):** As rotas de leitura (`GET /salas`, `GET /atividades`, `GET /atividades/:id`) permitem acesso a qualquer usuário autenticado (`organizacao` ou `participante`). (P23, contrato-api.md)\n- **R4 (Existência de Atividade):** Operações em atividades específicas (`GET /atividades/:id`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que a atividade exista. Se não existir, recusa com `404 NAO_ENCONTRADO`. (P24, contrato-api.md)\n- **R5 (Corpo de Requisição):** Requisições com corpo malformado, não-JSON ou campos obrigatórios ausentes/com tipos inválidos geram `422 DADOS_INVALIDOS`. (contrato-api.md)\n- **R6 (Ordem das Verificações):** A ordem de prioridade para verificação de erros é: 1º Identificação (401), 2º Perfil (403), 3º Existência (404), 4º Corpo (422 DADOS_INVALIDOS), e por último as regras de negócio específicas da atividade. (P25, contrato-api.md)\n- **R7 (Quantidade de Encontros):** Palestras devem ter exatamente 1 encontro; minicursos devem ter de 2 a 5 encontros. Caso contrário, recusa com `422 QUANTIDADE_DE_ENCONTROS`. (P1, RN-102, RN-103)\n- **R8 (Validade do Encontro):** Cada encontro deve durar entre 1 hora e 4 horas, começar e terminar no mesmo dia (sem atravessar a meia-noite), situar-se entre os dias 19 e 23/10/2026 (horário de Brasília). Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, RN-104, RN-105)\n- **R9 (Sem Sobreposição na Atividade):** Os encontros de uma mesma atividade não podem se sobrepor no tempo. Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, P12, RN-106)\n- **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)\n- **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)\n- **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)\n- **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)\n- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)\n- **R15 (Atividade Já Iniciada no Cancelamento):** Uma atividade só pode ser cancelada antes de iniciar. A atividade é considerada iniciada quando o relógio atinge o início do primeiro encontro (inclusive). Se já iniciou, recusa com `422 ATIVIDADE_JA_INICIADA`. (P4, P6, RN-112)\n- **R16 (Atividade Cancelada):** Uma atividade cancelada não pode ser alterada (`PATCH`) nem cancelada novamente. Tentativas recusam com `422 ATIVIDADE_CANCELADA`. (P10, RN-113)\n- **R17 (Vagas Abaixo dos Inscritos no PATCH):** Na alteração de vagas (`PATCH /atividades/:id`), o novo número de vagas pode ficar entre o total de ocupantes (confirmadas + convocadas) e a capacidade da sala. Se o número de vagas for menor que as ocupações atuais, recusa com `409 VAGAS_ABAIXO_DOS_INSCRITOS`. (P7, P14, RN-111)\n- **R18 (Carga Horária Calculada):** O campo `cargaHorariaMinutos` é calculado pela soma das durações dos encontros em minutos, desconsiderando intervalos. Se a organização enviar esse campo no corpo, ele é ignorado. (P9, RN-109)\n- **R19 (IDs de Encontros):** Os IDs de encontros gerados pelo sistema seguem o formato `enc_` seguido de 8 hexadecimais minúsculos, sendo únicos em todo o sistema. (P18, contrato-api.md)\n- **R20 (Cancelamento Sem Corpo):** O endpoint `POST /atividades/:id/cancelamento` não requer corpo de requisição; se algum corpo for enviado, ele é ignorado. (P20)\n- **R21 (Filtros de Listagem):** No `GET /atividades`, os filtros `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso` são cumulativos. Uma atividade aparece se possuir pelo menos um encontro no dia especificado (no fuso de Brasília) e corresponder ao tipo, quando informados. (P8, RN-116)\n- **R22 (Ordenação de Resultados):** No `GET /atividades`, os resultados são ordenados pelo horário de início do 1º encontro e, em caso de empate, pelo título em ordem alfabética. No `GET /salas`, os resultados seguem a ordem dos dados iniciais. (P16, RN-115)\n- **R23 (Situação Calculada):** A situação da atividade é calculada dinamicamente pelo relógio: `prevista` (antes do início do 1º encontro), `em_andamento` (a partir do início do 1º encontro até o fim do último encontro), `encerrada` (após o fim do último encontro), e `cancelada` (sobrepõe todas as outras se a atividade foi cancelada). (P5, P6, RN-114)\n- **R24 (Métrica de Ocupação):** Os campos de métricas são calculados da seguinte forma: `ocupadas` = inscrições confirmadas + convocadas; `vagasRestantes` = `vagas` - `ocupadas`; `emEspera` = contagem de inscrições em espera. (P11, RN-111, contrato-api.md)\n\n## 6. Critérios de aceite\n\n1. (R1) GET /salas sem cabeçalho `X-Usuario` ou com ID inexistente → 401 `USUARIO_DESCONHECIDO`.\n2. (R2) POST /atividades por usuário com papel `participante` → 403 `SOMENTE_ORGANIZACAO`.\n3. (R3) GET /salas por usuário com papel `participante` → 200 `[Sala]`.\n4. (R4) GET /atividades/atv_inexistente → 404 `NAO_ENCONTRADO`.\n5. (R6, R1) POST /atividades com usuário inexistente → 401 `USUARIO_DESCONHECIDO` (verificação antes de perfil, existência e corpo).\n6. (R7) POST /atividades com palestra tendo 2 encontros → 422 `QUANTIDADE_DE_ENCONTROS`.\n7. (R8) POST /atividades com encontro durando 5 horas → 422 `ENCONTRO_INVALIDO`.\n8. (R9) POST /atividades com dois encontros da mesma atividade sobrepostos no tempo → 422 `ENCONTRO_INVALIDO`.\n9. (R10) POST /atividades com conflito de horário na mesma sala (menos de 15 min de intervalo) → 409 `CONFLITO_DE_SALA`.\n10. (R11) POST /atividades com vagas superior à capacidade da sala (ex: 50 vagas na Sala 101) → 422 `VAGAS_ACIMA_DA_CAPACIDADE`.\n11. (R12) POST /atividades com `salaId` inexistente → 422 `DADOS_INVALIDOS`.\n12. (R13) POST /atividades com `titulo` vazio → 422 `DADOS_INVALIDOS`.\n13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n14. (R15) POST /atividades/:id/cancelamento com relógio após o início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.\n15. (R16) PATCH /atividades/:id em atividade já cancelada → 422 `ATIVIDADE_CANCELADA`.\n16. (R17) PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais (confirmadas + convocadas) → 409 `VAGAS_ABAIXO_DOS_INSCRITOS`.\n17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.\n18. (R21) GET /atividades?dia=2026-10-19&tipo=minicurso retornando apenas minicursos do dia especificado.\n19. (R23) GET /atividades mostrando situação `prevista`, `em_andamento`, `encerrada` ou `cancelada` conforme o relógio de teste.\n\n## 7. Como isto será verificado\nA verificação será feita por meio de testes de integração HTTP na API Express, utilizando a costura externa `criarServidor()` com `MODO_TESTE=1`, manipulando o relógio via `PUT /_teste/relogio` e reiniciando o estado via `POST /_teste/reset`.\n\n## 8. Fatias de entrega\n\n1. **Fatia 1 (Leitura básica e autenticação):** GET /salas, GET /atividades, GET /atividades/:id, validação de cabeçalho `X-Usuario` (R1, R3, R4, R6, R21, R22, R23).\n2. **Fatia 2 (Criação de atividades e validações):** POST /atividades, restrição de organização (R2), quantidade de encontros (R7), validade de encontros (R8, R9), conflito de sala/intervalo (R10), capacidade (R11), sala inválida (R12), título (R13), cálculo de carga horária e IDs (R18, R19).\n3. **Fatia 3 (Alteração, cancelamento e métricas):** PATCH /atividades/:id (R14, R17), POST /atividades/:id/cancelamento (R15, R16, R20), e cálculo de métricas de ocupação (R24).\n",
+       "filePath": "/home/juliana/semana-academica/specs/M1-grade.md"
+      },
+      "output": "Wrote file successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "filepath": "/home/juliana/semana-academica/specs/M1-grade.md",
+       "exists": false,
+       "truncated": false
+      },
+      "title": "specs/M1-grade.md",
+      "time": {
+       "start": 1789851855923,
+       "end": 1789851855973
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "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"
+      }
+     },
+     "id": "prt_0bb7bec26001msO2fhX37a7X3L",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b8eb8001DBCb5E4EIMyLIY"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-finish",
+     "tokens": {
+      "total": 31766,
+      "input": 22055,
+      "output": 3706,
+      "reasoning": 6005,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.030894,
+     "id": "prt_0bb7bed20001nLPGB615Yd6Boy",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b8eb8001DBCb5E4EIMyLIY"
+    },
+    {
+     "type": "patch",
+     "hash": "1fe94ba291002dd4d3d42eef13875029421e633a",
+     "files": [
+      "/home/juliana/semana-academica/specs/M1-grade.md"
+     ],
+     "id": "prt_0bb7bed90001dWIigFTzde2ilA",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7b8eb8001DBCb5E4EIMyLIY"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7b6be3001Sq9XutFZzWNuWl",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0069775,
+    "tokens": {
+     "total": 34520,
+     "input": 16509,
+     "output": 512,
+     "reasoning": 89,
+     "cache": {
+      "write": 0,
+      "read": 17410
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789851856308,
+     "completed": 1789851859670
+    },
+    "finish": "stop",
+    "id": "msg_0bb7bedb4001G5w5y3V2Mir1kJ",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-start",
+     "id": "prt_0bb7bf4e3001geYFM0gMWzpW99",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7bedb4001G5w5y3V2Mir1kJ"
+    },
+    {
+     "type": "text",
+     "text": "- R1 (Autenticação): Exige cabeçalho `X-Usuario` válido.\n- R2 (Perfil de Organização): Escrita restrita a organizadores.\n- R3 (Perfil de Leitura): Leitura permitida a usuários identificados.\n- R4 (Existência de Atividade): Operações exigem atividade existente.\n- R5 (Corpo de Requisição): Validação de JSON e campos obrigatórios.\n- R6 (Ordem das Verificações): Prioridade entre erros da API.\n- R7 (Quantidade de Encontros): Palestra (1) e minicurso (2 a 5).\n- R8 (Validade do Encontro): Duração, limites de dia e fuso.\n- R9 (Sem Sobreposição na Atividade): Encontros sem choque temporal.\n- R10 (Conflito de Sala e Intervalo): Mínimo 15 min entre encontros na sala.\n- R11 (Capacidade da Sala): Vagas limitadas à capacidade.\n- R12 (Sala Inexistente no POST): Sala inválida gera erro no POST.\n- R13 (Validação de Título): Título obrigatório e não vazio.\n- R14 (Campos Não Editáveis no PATCH): Sala e encontros imutáveis.\n- R15 (Atividade Já Iniciada no Cancelamento): Cancelamento só antes de iniciar.\n- R16 (Atividade Cancelada): Atividade cancelada imutável.\n- R17 (Vagas Abaixo dos Inscritos no PATCH): Vagas não podem ficar abaixo dos ocupantes.\n- R18 (Carga Horária Calculada): Soma das durações dos encontros.\n- R19 (IDs de Encontros): Formato `enc_` + 8 hexadecimais.\n- R20 (Cancelamento Sem Corpo): Corpo ignorado no cancelamento.\n- R21 (Filtros de Listagem): Filtros `?dia` e `?tipo` cumulativos.\n- R22 (Ordenação de Resultados): Ordenação por início e título.\n- R23 (Situação Calculada): Situação dinâmica pelo relógio.\n- R24 (Métrica de Ocupação): Cálculo de ocupadas, restantes e espera.\n\nFalta alguma regra?",
+     "time": {
+      "start": 1789851858150,
+      "end": 1789851859582
+     },
+     "id": "prt_0bb7bf4e6001Ph6NQAKgiw3YlW",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7bedb4001G5w5y3V2Mir1kJ"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-finish",
+     "tokens": {
+      "total": 34520,
+      "input": 16509,
+      "output": 512,
+      "reasoning": 89,
+      "cache": {
+       "write": 0,
+       "read": 17410
+      }
+     },
+     "cost": 0.0069775,
+     "id": "prt_0bb7bfa900015Y6JY2SNMLYaZ4",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7bedb4001G5w5y3V2Mir1kJ"
+    }
+   ]
+  },
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789852042680
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.5-flash-lite"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "specs/M1-grade.md",
+       "patch": "Index: specs/M1-grade.md\n===================================================================\n--- specs/M1-grade.md\t\n+++ specs/M1-grade.md\t\n@@ -1,103 +1,103 @@\n # Spec — M1: Grade de atividades\n \n ## 1. Objetivo\n Permitir que a organização crie, altere e cancele atividades (palestras e minicursos) associadas a salas e horários válidos durante a Semana Acadêmica, e que participantes e organizadores consultem salas e atividades disponíveis.\n \n ## 2. Fora de escopo\n - Inscrições em atividades e lista de espera (tratado no M2).\n - Registro de presença, QR code e presença manual (tratado no M3).\n - Emissão de certificados e extrato de horas (tratado no M4).\n - Painel gerencial, sem chance e bloqueios (tratado no M5).\n - Criação de usuários e salas (dados iniciais fixos).\n \n ## 3. Modelo\n \n ### Atividade\n - `id`: string (gerado, prefixo `atv_` + 8 hexadecimais minúsculos) — informado pelo sistema / gerado.\n - `titulo`: string (obrigatório, não vazio) — informado pelo cliente.\n - `tipo`: string (`palestra` ou `minicurso`) — informado pelo cliente.\n - `salaId`: string (identificador da sala existente) — informado pelo cliente.\n - `vagas`: inteiro (mínimo 1, teto na capacidade da sala) — informado pelo cliente.\n - `encontros`: lista de Encontros (em ordem de início) — informado pelo cliente.\n - `cargaHorariaMinutos`: inteiro — calculado (soma das durações dos encontros em minutos).\n - `situacao`: string (`prevista`, `em_andamento`, `encerrada`, `cancelada`) — calculado pelo relógio.\n - `ocupadas`: inteiro (confirmadas + convocadas) — calculado.\n - `vagasRestantes`: inteiro (`vagas` - `ocupadas`) — calculado.\n - `emEspera`: inteiro (quantidade de inscrições em espera) — calculado.\n \n ### Encontro\n - `id`: string (gerado, prefixo `enc_` + 8 hexadecimais minúsculos, único no sistema) — gerado.\n - `inicio`: ISO 8601 com fuso — informado pelo cliente.\n - `fim`: ISO 8601 com fuso — informado pelo cliente.\n \n ### Sala\n - `id`: string (`auditorio`, `sala-101`, `sala-102`, `lab-3`) — dados iniciais.\n - `nome`: string — dados iniciais.\n - `capacidade`: inteiro — dados iniciais.\n \n ## 4. Endpoints\n \n - `GET /salas` (todos os usuários identificados) → `200 [Sala]`\n - `GET /atividades` (todos os usuários identificados; filtros opcionais `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso`) → `200 [Atividade]`\n - `GET /atividades/:id` (todos os usuários identificados) → `200 Atividade`\n - `POST /atividades` (somente organização) → `201 Atividade`\n - `PATCH /atividades/:id` (somente organização) → `200 Atividade`\n - `POST /atividades/:id/cancelamento` (somente organização) → `200 Atividade`\n \n ## 5. Regras\n \n - **R1 (Autenticação):** Toda rota do M1 exige o cabeçalho `X-Usuario` com um ID de usuário válido e existente. Se ausente ou inexistente, recusa com `401 USUARIO_DESCONHECIDO`. (P21, contrato-api.md)\n - **R2 (Perfil de Organização):** As rotas de escrita (`POST /atividades`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que o usuário autenticado tenha papel `organizacao`. Se for `participante`, recusa com `403 SOMENTE_ORGANIZACAO`. (P22, RN-101, contrato-api.md)\n - **R3 (Perfil de Leitura):** As rotas de leitura (`GET /salas`, `GET /atividades`, `GET /atividades/:id`) permitem acesso a qualquer usuário autenticado (`organizacao` ou `participante`). (P23, contrato-api.md)\n - **R4 (Existência de Atividade):** Operações em atividades específicas (`GET /atividades/:id`, `PATCH /atividades/:id`, `POST /atividades/:id/cancelamento`) exigem que a atividade exista. Se não existir, recusa com `404 NAO_ENCONTRADO`. (P24, contrato-api.md)\n - **R5 (Corpo de Requisição):** Requisições com corpo malformado, não-JSON ou campos obrigatórios ausentes/com tipos inválidos geram `422 DADOS_INVALIDOS`. (contrato-api.md)\n - **R6 (Ordem das Verificações):** A ordem de prioridade para verificação de erros é: 1º Identificação (401), 2º Perfil (403), 3º Existência (404), 4º Corpo (422 DADOS_INVALIDOS), e por último as regras de negócio específicas da atividade. (P25, contrato-api.md)\n - **R7 (Quantidade de Encontros):** Palestras devem ter exatamente 1 encontro; minicursos devem ter de 2 a 5 encontros. Caso contrário, recusa com `422 QUANTIDADE_DE_ENCONTROS`. (P1, RN-102, RN-103)\n - **R8 (Validade do Encontro):** Cada encontro deve durar entre 1 hora e 4 horas, começar e terminar no mesmo dia (sem atravessar a meia-noite), situar-se entre os dias 19 e 23/10/2026 (horário de Brasília). Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, RN-104, RN-105)\n - **R9 (Sem Sobreposição na Atividade):** Os encontros de uma mesma atividade não podem se sobrepor no tempo. Caso contrário, recusa com `422 ENCONTRO_INVALIDO`. (P2, P12, RN-106)\n - **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)\n - **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)\n - **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)\n - **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)\n-- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)\n+- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), apenas `titulo` e `vagas` podem ser modificados; campos como `salaId`, `tipo` e a lista de `encontros` são não editáveis após a criação. Qualquer tentativa de alterar campos não editáveis recusa com `422 CAMPO_NAO_EDITAVEL`. (P4, P17, P19, RN-110)\n - **R15 (Atividade Já Iniciada no Cancelamento):** Uma atividade só pode ser cancelada antes de iniciar. A atividade é considerada iniciada quando o relógio atinge o início do primeiro encontro (inclusive). Se já iniciou, recusa com `422 ATIVIDADE_JA_INICIADA`. (P4, P6, RN-112)\n - **R16 (Atividade Cancelada):** Uma atividade cancelada não pode ser alterada (`PATCH`) nem cancelada novamente. Tentativas recusam com `422 ATIVIDADE_CANCELADA`. (P10, RN-113)\n - **R17 (Vagas Abaixo dos Inscritos no PATCH):** Na alteração de vagas (`PATCH /atividades/:id`), o novo número de vagas pode ficar entre o total de ocupantes (confirmadas + convocadas) e a capacidade da sala. Se o número de vagas for menor que as ocupações atuais, recusa com `409 VAGAS_ABAIXO_DOS_INSCRITOS`. (P7, P14, RN-111)\n - **R18 (Carga Horária Calculada):** O campo `cargaHorariaMinutos` é calculado pela soma das durações dos encontros em minutos, desconsiderando intervalos. Se a organização enviar esse campo no corpo, ele é ignorado. (P9, RN-109)\n - **R19 (IDs de Encontros):** Os IDs de encontros gerados pelo sistema seguem o formato `enc_` seguido de 8 hexadecimais minúsculos, sendo únicos em todo o sistema. (P18, contrato-api.md)\n - **R20 (Cancelamento Sem Corpo):** O endpoint `POST /atividades/:id/cancelamento` não requer corpo de requisição; se algum corpo for enviado, ele é ignorado. (P20)\n - **R21 (Filtros de Listagem):** No `GET /atividades`, os filtros `?dia=AAAA-MM-DD` e `?tipo=palestra|minicurso` são cumulativos. Uma atividade aparece se possuir pelo menos um encontro no dia especificado (no fuso de Brasília) e corresponder ao tipo, quando informados. (P8, RN-116)\n - **R22 (Ordenação de Resultados):** No `GET /atividades`, os resultados são ordenados pelo horário de início do 1º encontro e, em caso de empate, pelo título em ordem alfabética. No `GET /salas`, os resultados seguem a ordem dos dados iniciais. (P16, RN-115)\n - **R23 (Situação Calculada):** A situação da atividade é calculada dinamicamente pelo relógio: `prevista` (antes do início do 1º encontro), `em_andamento` (a partir do início do 1º encontro até o fim do último encontro), `encerrada` (após o fim do último encontro), e `cancelada` (sobrepõe todas as outras se a atividade foi cancelada). (P5, P6, RN-114)\n - **R24 (Métrica de Ocupação):** Os campos de métricas são calculados da seguinte forma: `ocupadas` = inscrições confirmadas + convocadas; `vagasRestantes` = `vagas` - `ocupadas`; `emEspera` = contagem de inscrições em espera. (P11, RN-111, contrato-api.md)\n \n ## 6. Critérios de aceite\n \n 1. (R1) GET /salas sem cabeçalho `X-Usuario` ou com ID inexistente → 401 `USUARIO_DESCONHECIDO`.\n 2. (R2) POST /atividades por usuário com papel `participante` → 403 `SOMENTE_ORGANIZACAO`.\n 3. (R3) GET /salas por usuário com papel `participante` → 200 `[Sala]`.\n 4. (R4) GET /atividades/atv_inexistente → 404 `NAO_ENCONTRADO`.\n 5. (R6, R1) POST /atividades com usuário inexistente → 401 `USUARIO_DESCONHECIDO` (verificação antes de perfil, existência e corpo).\n 6. (R7) POST /atividades com palestra tendo 2 encontros → 422 `QUANTIDADE_DE_ENCONTROS`.\n 7. (R8) POST /atividades com encontro durando 5 horas → 422 `ENCONTRO_INVALIDO`.\n 8. (R9) POST /atividades com dois encontros da mesma atividade sobrepostos no tempo → 422 `ENCONTRO_INVALIDO`.\n 9. (R10) POST /atividades com conflito de horário na mesma sala (menos de 15 min de intervalo) → 409 `CONFLITO_DE_SALA`.\n 10. (R11) POST /atividades com vagas superior à capacidade da sala (ex: 50 vagas na Sala 101) → 422 `VAGAS_ACIMA_DA_CAPACIDADE`.\n 11. (R12) POST /atividades com `salaId` inexistente → 422 `DADOS_INVALIDOS`.\n 12. (R13) POST /atividades com `titulo` vazio → 422 `DADOS_INVALIDOS`.\n-13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n+13. (R14) PATCH /atividades/:id alterando a `salaId`, `tipo` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n 14. (R15) POST /atividades/:id/cancelamento com relógio após o início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.\n 15. (R16) PATCH /atividades/:id em atividade já cancelada → 422 `ATIVIDADE_CANCELADA`.\n 16. (R17) PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais (confirmadas + convocadas) → 409 `VAGAS_ABAIXO_DOS_INSCRITOS`.\n 17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.\n 18. (R21) GET /atividades?dia=2026-10-19&tipo=minicurso retornando apenas minicursos do dia especificado.\n 19. (R23) GET /atividades mostrando situação `prevista`, `em_andamento`, `encerrada` ou `cancelada` conforme o relógio de teste.\n \n ## 7. Como isto será verificado\n A verificação será feita por meio de testes de integração HTTP na API Express, utilizando a costura externa `criarServidor()` com `MODO_TESTE=1`, manipulando o relógio via `PUT /_teste/relogio` e reiniciando o estado via `POST /_teste/reset`.\n \n ## 8. Fatias de entrega\n \n 1. **Fatia 1 (Leitura básica e autenticação):** GET /salas, GET /atividades, GET /atividades/:id, validação de cabeçalho `X-Usuario` (R1, R3, R4, R6, R21, R22, R23).\n 2. **Fatia 2 (Criação de atividades e validações):** POST /atividades, restrição de organização (R2), quantidade de encontros (R7), validade de encontros (R8, R9), conflito de sala/intervalo (R10), capacidade (R11), sala inválida (R12), título (R13), cálculo de carga horária e IDs (R18, R19).\n 3. **Fatia 3 (Alteração, cancelamento e métricas):** PATCH /atividades/:id (R14, R17), POST /atividades/:id/cancelamento (R15, R16, R20), e cálculo de métricas de ocupação (R24).\n",
+       "additions": 2,
+       "deletions": 2,
+       "status": "modified"
+      }
+     ]
+    },
+    "id": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "R14: acrescente o tipo como campo não editável; só título e vagas podem mudar (P4, RN-110). Fora isso, não falta regra.",
+     "id": "prt_0bb7ec5b9001EaSCdgeKGh0Cns",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ec5b8001k1XMpwEWno2Fse"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00609154,
+    "tokens": {
+     "total": 34649,
+     "input": 17083,
+     "output": 45,
+     "reasoning": 133,
+     "cache": {
+      "write": 0,
+      "read": 17388
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789852042704,
+     "completed": 1789852045063
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7ec5d0001xcHPAacqLiWIoD",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-start",
+     "id": "prt_0bb7ece1e001EEd2kCpkXLi2Dd",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ec5d0001xcHPAacqLiWIoD"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "ebjHoJ1Ii8fTEXDt",
+     "state": {
+      "status": "completed",
+      "input": {
+       "offset": 50,
+       "filePath": "/home/juliana/semana-academica/specs/M1-grade.md",
+       "limit": 100
+      },
+      "output": "[8787 caracteres omitidos]",
+      "title": "specs/M1-grade.md",
+      "time": {
+       "start": 1789852044846,
+       "end": 1789852044864
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EtEECs4EAWkUfRPqMfFifuxfvRKwsurhf8hdtrTyim4SDFQ0hE4MHwxYuH6n+Ft+YiQLg1FY/WgiXRKqvpcnvu8wl5hGyS6rdZRqhaidXUWfhmSSqSxMeZZZSru9YFo+jNEdF+9ogPe7cl+Qa2+h7wj9UH2BJibPGxOCP4uxV5fJWAYDxaZmlrsmvQtB1+KcdVNuDcIz+eCryyzKErOIAbzDxgJbua15X2u34fM0sTgyMgeR4ZzxwITOLp/n9RRiRSBPGg/JKYzXhYwqd0Y7a7UT1k8Q4Vk2vygubLUpxLMSIE4NHHS5rxovy4aT7KqQvfnOjfye/csOlsq1BLoF83kXu0APP56HZIq90TxzA0kG5uDzGWX6MPcbHC5Ix/J1+jOc046aX0oEASQfZFZFaTnbE03HPIzDbWqYowG8RlFdxVE1V6PF5NkDNslSnVunt68FLvVNfUiGfjkI3NDO1B8vMcWQZYLRVVMKQv58oi17IksXJBO3WQnhlmj97ln24hcAqAArbG0h1u5KP6tpAJnrw+IA4lxPja9WK0j3W/6oDyE3bPzWHm9kLE/a5sSOLSUgeP8GJOtyUXxsVDvEgP9z4CVT3loFpHjJQF1dpyVYNUcds+yBG2BsdPAdwtDXuZRxqaV2UzaJTqSFDwYHqZVxP4aW5f0/xytCTB6B4FA/3hwuv7oxqpND8exrHsMo4adUUS8Y3MfS8hmZimHp1M/8cGLNjzF1bgUtJhCybmuUk07HDaQjSBKtqaCRX6s8ZY8d4lq5R00Nr3CWRA5zHtkPRIw="
+      }
+     },
+     "id": "prt_0bb7ece25001zHoBOZxnTFqJ2c",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ec5d0001xcHPAacqLiWIoD"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-finish",
+     "tokens": {
+      "total": 34649,
+      "input": 17083,
+      "output": 45,
+      "reasoning": 133,
+      "cache": {
+       "write": 0,
+       "read": 17388
+      }
+     },
+     "cost": 0.00609154,
+     "id": "prt_0bb7eceba001t5qsI0FHd3NWRe",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ec5d0001xcHPAacqLiWIoD"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00808373,
+    "tokens": {
+     "total": 38335,
+     "input": 20475,
+     "output": 237,
+     "reasoning": 332,
+     "cache": {
+      "write": 0,
+      "read": 17291
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789852045074,
+     "completed": 1789852048468
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7ecf12001wJyP3CVPXgDAsC",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "type": "step-start",
+     "id": "prt_0bb7ed880001fvVsBN6CgTxZ5O",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ecf12001wJyP3CVPXgDAsC"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Updating Grade Specs**\n\nI'm working on updating the R14 specification within `specs/M1-grade.md`. Specifically, I'm using the `edit` tool to refine the restriction regarding non-editable fields in the PATCH operation for activities. Right now, it clearly states that the `salaId` cannot be changed during a PATCH request, focusing on preventing modifications to the room.\n\n\n",
+     "time": {
+      "start": 1789852047502,
+      "end": 1789852048225
+     },
+     "id": "prt_0bb7ed88e001WYhrrI7L4mV7Zh",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ecf12001wJyP3CVPXgDAsC"
+    },
+    {
+     "type": "tool",
+     "tool": "edit",
+     "callID": "KYhX6Ma2A3kJ8NfQ",
+     "state": {
+      "status": "completed",
+      "input": {
+       "newString": "- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), apenas `titulo` e `vagas` podem ser modificados; campos como `salaId`, `tipo` e a lista de `encontros` são não editáveis após a criação. Qualquer tentativa de alterar campos não editáveis recusa com `422 CAMPO_NAO_EDITAVEL`. (P4, P17, P19, RN-110)",
+       "filePath": "/home/juliana/semana-academica/specs/M1-grade.md",
+       "oldString": "- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)"
+      },
+      "output": "Edit applied successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "diff": "Index: /home/juliana/semana-academica/specs/M1-grade.md\n===================================================================\n--- /home/juliana/semana-academica/specs/M1-grade.md\n+++ /home/juliana/semana-academica/specs/M1-grade.md\n@@ -58,9 +58,9 @@\n - **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)\n - **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)\n - **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)\n - **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)\n-- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)\n+- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), apenas `titulo` e `vagas` podem ser modificados; campos como `salaId`, `tipo` e a lista de `encontros` são não editáveis após a criação. Qualquer tentativa de alterar campos não editáveis recusa com `422 CAMPO_NAO_EDITAVEL`. (P4, P17, P19, RN-110)\n - **R15 (Atividade Já Iniciada no Cancelamento):** Uma atividade só pode ser cancelada antes de iniciar. A atividade é considerada iniciada quando o relógio atinge o início do primeiro encontro (inclusive). Se já iniciou, recusa com `422 ATIVIDADE_JA_INICIADA`. (P4, P6, RN-112)\n - **R16 (Atividade Cancelada):** Uma atividade cancelada não pode ser alterada (`PATCH`) nem cancelada novamente. Tentativas recusam com `422 ATIVIDADE_CANCELADA`. (P10, RN-113)\n - **R17 (Vagas Abaixo dos Inscritos no PATCH):** Na alteração de vagas (`PATCH /atividades/:id`), o novo número de vagas pode ficar entre o total de ocupantes (confirmadas + convocadas) e a capacidade da sala. Se o número de vagas for menor que as ocupações atuais, recusa com `409 VAGAS_ABAIXO_DOS_INSCRITOS`. (P7, P14, RN-111)\n - **R18 (Carga Horária Calculada):** O campo `cargaHorariaMinutos` é calculado pela soma das durações dos encontros em minutos, desconsiderando intervalos. Se a organização enviar esse campo no corpo, ele é ignorado. (P9, RN-109)\n",
+       "filediff": {
+        "file": "/home/juliana/semana-academica/specs/M1-grade.md",
+        "patch": "Index: /home/juliana/semana-academica/specs/M1-grade.md\n===================================================================\n--- /home/juliana/semana-academica/specs/M1-grade.md\n+++ /home/juliana/semana-academica/specs/M1-grade.md\n@@ -58,9 +58,9 @@\n - **R10 (Conflito de Sala e Intervalo):** Não pode haver conflito de horários de encontros na mesma sala, exigindo pelo menos 15 minutos de intervalo entre o término de um encontro e o início de outro na mesma sala. Atividades canceladas não contam para conflito. Se houver conflito, recusa com `409 CONFLITO_DE_SALA`. (P3, RN-108)\n - **R11 (Capacidade da Sala):** O número de vagas de uma atividade deve ser um número inteiro de no mínimo 1 e no máximo igual à capacidade da sala selecionada. Se exceder a capacidade ou for inferior a 1, recusa com `422 VAGAS_ACIMA_DA_CAPACIDADE`. (P3, P13, RN-107)\n - **R12 (Sala Inexistente no POST):** No `POST /atividades`, se o `salaId` informado não existir, recusa com `422 DADOS_INVALIDOS`. (P19, contrato-api.md)\n - **R13 (Validação de Título):** O campo `titulo` é obrigatório e não pode ser vazio. Caso contrário, recusa com `422 DADOS_INVALIDOS`. (P13, contrato-api.md)\n-- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), não é permitido alterar a sala (`salaId`) ou a lista de encontros. Qualquer tentativa de alterá-los recusa com `422 CAMPO_NAO_EDITAVEL`. (P17, P19, RN-110)\n+- **R14 (Campos Não Editáveis no PATCH):** Na alteração (`PATCH /atividades/:id`), apenas `titulo` e `vagas` podem ser modificados; campos como `salaId`, `tipo` e a lista de `encontros` são não editáveis após a criação. Qualquer tentativa de alterar campos não editáveis recusa com `422 CAMPO_NAO_EDITAVEL`. (P4, P17, P19, RN-110)\n - **R15 (Atividade Já Iniciada no Cancelamento):** Uma atividade só pode ser cancelada antes de iniciar. A atividade é considerada iniciada quando o relógio atinge o início do primeiro encontro (inclusive). Se já iniciou, recusa com `422 ATIVIDADE_JA_INICIADA`. (P4, P6, RN-112)\n - **R16 (Atividade Cancelada):** Uma atividade cancelada não pode ser alterada (`PATCH`) nem cancelada novamente. Tentativas recusam com `422 ATIVIDADE_CANCELADA`. (P10, RN-113)\n - **R17 (Vagas Abaixo dos Inscritos no PATCH):** Na alteração de vagas (`PATCH /atividades/:id`), o novo número de vagas pode ficar entre o total de ocupantes (confirmadas + convocadas) e a capacidade da sala. Se o número de vagas for menor que as ocupações atuais, recusa com `409 VAGAS_ABAIXO_DOS_INSCRITOS`. (P7, P14, RN-111)\n - **R18 (Carga Horária Calculada):** O campo `cargaHorariaMinutos` é calculado pela soma das durações dos encontros em minutos, desconsiderando intervalos. Se a organização enviar esse campo no corpo, ele é ignorado. (P9, RN-109)\n",
+        "additions": 1,
+        "deletions": 1
+       },
+       "truncated": false
+      },
+      "title": "specs/M1-grade.md",
+      "time": {
+       "start": 1789852048217,
+       "end": 1789852048244
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EqgKCqUKAWkUfROPvJWofgG6eYg63osZ3G4QFXgmbsN81JkeyAhyrHb5LEuvJfzv5dEZ6fkMgLEHx1yAX/JJ+Lc4flSbqcDtGDuJm8KtrQ4s87Hw9Oxy6nwaKMwI0V1FW9kukiGiraVtfaeg6xqOPb8opS0S2yW56Br/UPhZHtKPjBuBQDwv4ZozVCSegLQ0HScRyO+K/oiouLAfUS8VNeXiStLTCBSQz6kAJMsZfNTCUaB02JPOcEydoPpERg+a7oKLYDPQL2O2LV7FaJ1VxCb2/B2dYNkl/iG+diwICqwmBqxNj/uZj9zNsDpLBgJt3M+AnwGQG4vedoTZWcMLHnZPmlpjg7HSatyUt3oYMlvWR75puSUkRAysPAiCp1QguNLrpGws8yuF5ufWvsENwqZP+n4unlA7cIyGuHlpjeU+bihFx0vxqsMFjW6wGyAFt2u+oj7zlKU3ioenNxXEhsFRhVXPkwJuDsoTzR0Fz4Ac5S6V34o6EmlnwvBj2xphtfPB6jGr4Zshe63uOIGc5rqa4kdj+00AKw6XDpXaCdKMIz8QPN5E2/YGdPrEZSY6jOwHMyTnxpj0LtjQgBYCN9jFlhXoEnDYwrcDeGM053ZCZMV9kZhTNwNERb0mWpH8SquJsnljOzBJRHgnrfM+ZYTvDcD3QjlJntkfLtcGdXlNXsFbh9OhM957I4jYYrYCdH/dEAPnu2OVxUMEjvHOsPOwqEQ/Ip1PEjckzQMyuf2NRjd4iZ+xVmyLgdUJdFMD63hFIhnhbP1UCUL5HukU+LJ1iNSr2F13pUZG1SyqBEZJrRRgHda1hE0eZjGqe5maQJQ9In5pszsBdLkoX6dB4FfQWlY1/6AL07DKBabGgIxp8uoqZm8+/4KGelU/EmRN84vo+FNYwEk10eXeeV2xgkl6NtD4pDzSlFHMupFqswyT2aa70MuaRSLEmMK++fYKUs45Rx0PyngkNANxssJTjZU/tJ6pYcUlmL6wPeV8trPRVTN+wkxgqYrgWzdjKKF0bnGOZopTZdRLJuO0PfQUMIoacy2WNqShFRbiXZwDAkALTajdShWgs3mMwiPgiDy59DIRtDgTbugp0yGvEZ+E1fq5xlWHTqnkSoYmzPTZoiCacn9+qMNyp64eGfPBMIoTH4KLg+Alg67XrLaVb/JX0hZXKst5Dit84f9S4AfAFypOGWdZmGQqvmBjt2s9K6dVCKsdN8qCPfobBNt+MNwM6SjydvQPAyD2MCnaDGBNpBovCLZpzL4qCJmjeslQ4vcOPYJv0qvawZOf6/tDJowHuH7AkggK5a4t9nvfcSBkL6lW3QjYl+oxhlZoe7IBAM/9H2z1q+b2TgROhkDn5uiXABmciAtM9Xf8LSSvDZYwkvmtX9xi3fcyCf3kWMblHBCOZ67vpEDnkbE2eyKxQZafQT5dDGcPZmreZaCkq22OjsmSBhjunz5j7cv6PIbim3OHBj+zBQ+Lrz21rey8lwb/U2vKHBNlvy2K/PD7yArK3mkK9gRs8BcWqIwySGqRw1DMyhpp/S2HdRF0kBRccMIb+rfZpLHeYMKQ5IKhLxux7BpErvDU/7+3HOxoGpd05si8mplaTbxs/U+biVt103eBm/5DvuOivkqxZCba9EIOXUSwrGZScByqwYeEwbg/La348rIw05oDvblNMyX8NrY6s2dtQ2h2qzeUGKSsBGTVaQ+cOoucmFGvYc81NuQpjWpD/iAl541CUDifEprqfY5h5xH3dM+2UJjHL2en"
+      }
+     },
+     "id": "prt_0bb7edb4d001CATYUtKtQIcXcW",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ecf12001wJyP3CVPXgDAsC"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "7011ba66546c448f534f3eeb684002ca71825523",
+     "type": "step-finish",
+     "tokens": {
+      "total": 38335,
+      "input": 20475,
+      "output": 237,
+      "reasoning": 332,
+      "cache": {
+       "write": 0,
+       "read": 17291
+      }
+     },
+     "cost": 0.00808373,
+     "id": "prt_0bb7edbf100129b4v00q03cWak",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ecf12001wJyP3CVPXgDAsC"
+    },
+    {
+     "type": "patch",
+     "hash": "6af31b4220e44caeff8f8f3efd0a6bb8fd3cd914",
+     "files": [
+      "/home/juliana/semana-academica/specs/M1-grade.md"
+     ],
+     "id": "prt_0bb7edc4f001X5UN8KWJAXo4fK",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ecf12001wJyP3CVPXgDAsC"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00242237,
+    "tokens": {
+     "total": 38535,
+     "input": 3821,
+     "output": 44,
+     "reasoning": 51,
+     "cache": {
+      "write": 0,
+      "read": 34619
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789852048475,
+     "completed": 1789852050303
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7edc5b001HiZe8kGshFSUX6",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "7011ba66546c448f534f3eeb684002ca71825523",
+     "type": "step-start",
+     "id": "prt_0bb7ee2e6001I6Wf1cSe00lHt0",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7edc5b001HiZe8kGshFSUX6"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "Tu1ToImLcTKOCfjq",
+     "state": {
+      "status": "completed",
+      "input": {
+       "offset": 80,
+       "filePath": "/home/juliana/semana-academica/specs/M1-grade.md",
+       "limit": 20
+      },
+      "output": "[2143 caracteres omitidos]",
+      "title": "specs/M1-grade.md",
+      "time": {
+       "start": 1789852050168,
+       "end": 1789852050183
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "Eo8CCowCAWkUfRPbhSTQqeSmXDiYSlf/EOu7YlM9BMosoesV5olNAJyZ2CWieh/w8vn7jNRU5Q6YacH1/zos86fgxYLEfAQPplUi5HiD5pZIebvIPy8VAfFdljyex5CuQTog74dowkYHTVoRiYBWm8YexryoJ+ZlhG2u3cK9Vu99iMjVZmsQyEcBPBU0dXzm0DiEzTWuMmzWLK+sSVjBH9sAipL5V5Lp/1Gsq8HEuexKjHFP93Vy6hyBzW2tphugHVKFM2MZpNEVR6uKa3A34aMnJiflJv7qcxfsxR1FsnuTAbeIH0oGR+tQZ4FDclt97XDzshX6izc0X0FYAzk9BahWuSbufT5kp7p7L6vy8bKHKQ=="
+      }
+     },
+     "id": "prt_0bb7ee2eb001CK6oD9csbwJB5t",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7edc5b001HiZe8kGshFSUX6"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "7011ba66546c448f534f3eeb684002ca71825523",
+     "type": "step-finish",
+     "tokens": {
+      "total": 38535,
+      "input": 3821,
+      "output": 44,
+      "reasoning": 51,
+      "cache": {
+       "write": 0,
+       "read": 34619
+      }
+     },
+     "cost": 0.00242237,
+     "id": "prt_0bb7ee347001y85FA7meRFOleA",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7edc5b001HiZe8kGshFSUX6"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00284889,
+    "tokens": {
+     "total": 39525,
+     "input": 4815,
+     "output": 135,
+     "reasoning": 12,
+     "cache": {
+      "write": 0,
+      "read": 34563
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789852050310,
+     "completed": 1789852052329
+    },
+    "finish": "tool-calls",
+    "id": "msg_0bb7ee386001kIYQWfCkFC1WN5",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "7011ba66546c448f534f3eeb684002ca71825523",
+     "type": "step-start",
+     "id": "prt_0bb7eea81001wIkJW8uQhP683V",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ee386001kIYQWfCkFC1WN5"
+    },
+    {
+     "type": "tool",
+     "tool": "edit",
+     "callID": "ONmhfnlsy859SXgV",
+     "state": {
+      "status": "completed",
+      "input": {
+       "oldString": "13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.",
+       "newString": "13. (R14) PATCH /atividades/:id alterando a `salaId`, `tipo` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.",
+       "filePath": "/home/juliana/semana-academica/specs/M1-grade.md"
+      },
+      "output": "Edit applied successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "diff": "Index: /home/juliana/semana-academica/specs/M1-grade.md\n===================================================================\n--- /home/juliana/semana-academica/specs/M1-grade.md\n+++ /home/juliana/semana-academica/specs/M1-grade.md\n@@ -84,9 +84,9 @@\n 9. (R10) POST /atividades com conflito de horário na mesma sala (menos de 15 min de intervalo) → 409 `CONFLITO_DE_SALA`.\n 10. (R11) POST /atividades com vagas superior à capacidade da sala (ex: 50 vagas na Sala 101) → 422 `VAGAS_ACIMA_DA_CAPACIDADE`.\n 11. (R12) POST /atividades com `salaId` inexistente → 422 `DADOS_INVALIDOS`.\n 12. (R13) POST /atividades com `titulo` vazio → 422 `DADOS_INVALIDOS`.\n-13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n+13. (R14) PATCH /atividades/:id alterando a `salaId`, `tipo` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n 14. (R15) POST /atividades/:id/cancelamento com relógio após o início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.\n 15. (R16) PATCH /atividades/:id em atividade já cancelada → 422 `ATIVIDADE_CANCELADA`.\n 16. (R17) PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais (confirmadas + convocadas) → 409 `VAGAS_ABAIXO_DOS_INSCRITOS`.\n 17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.\n",
+       "filediff": {
+        "file": "/home/juliana/semana-academica/specs/M1-grade.md",
+        "patch": "Index: /home/juliana/semana-academica/specs/M1-grade.md\n===================================================================\n--- /home/juliana/semana-academica/specs/M1-grade.md\n+++ /home/juliana/semana-academica/specs/M1-grade.md\n@@ -84,9 +84,9 @@\n 9. (R10) POST /atividades com conflito de horário na mesma sala (menos de 15 min de intervalo) → 409 `CONFLITO_DE_SALA`.\n 10. (R11) POST /atividades com vagas superior à capacidade da sala (ex: 50 vagas na Sala 101) → 422 `VAGAS_ACIMA_DA_CAPACIDADE`.\n 11. (R12) POST /atividades com `salaId` inexistente → 422 `DADOS_INVALIDOS`.\n 12. (R13) POST /atividades com `titulo` vazio → 422 `DADOS_INVALIDOS`.\n-13. (R14) PATCH /atividades/:id alterando a `salaId` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n+13. (R14) PATCH /atividades/:id alterando a `salaId`, `tipo` ou `encontros` → 422 `CAMPO_NAO_EDITAVEL`.\n 14. (R15) POST /atividades/:id/cancelamento com relógio após o início do 1º encontro → 422 `ATIVIDADE_JA_INICIADA`.\n 15. (R16) PATCH /atividades/:id em atividade já cancelada → 422 `ATIVIDADE_CANCELADA`.\n 16. (R17) PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais (confirmadas + convocadas) → 409 `VAGAS_ABAIXO_DOS_INSCRITOS`.\n 17. (R18) POST /atividades calculando corretamente `cargaHorariaMinutos` e ignorando valor enviado no corpo.\n",
+        "additions": 1,
+        "deletions": 1
+       },
+       "truncated": false
+      },
+      "title": "specs/M1-grade.md",
+      "time": {
+       "start": 1789852052114,
+       "end": 1789852052133
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EoABCn4BaRR9E3htGkycqa3sis/MSsD05jHCl+GVdLwj3lJe8qC49iKGGlvLzGjjNJfpZEMBRzZOwoO+/o0h3fAAfJ9vC/A03UvCk7AyqS2zd4m2KBwJLN30EXtp+eFQY6At1yQX3xuc+r4vRdQO1YCKwDFQ1c4M5s8TCeWvuD+TwPE="
+      }
+     },
+     "id": "prt_0bb7eea86001Us5EEuECh5VJUO",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ee386001kIYQWfCkFC1WN5"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "6f9f47ecaf9424360ca32837b2aa044cbcd510d8",
+     "type": "step-finish",
+     "tokens": {
+      "total": 39525,
+      "input": 4815,
+      "output": 135,
+      "reasoning": 12,
+      "cache": {
+       "write": 0,
+       "read": 34563
+      }
+     },
+     "cost": 0.00284889,
+     "id": "prt_0bb7eeb27001O4K3hBnPFhf7y4",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ee386001kIYQWfCkFC1WN5"
+    },
+    {
+     "type": "patch",
+     "hash": "7011ba66546c448f534f3eeb684002ca71825523",
+     "files": [
+      "/home/juliana/semana-academica/specs/M1-grade.md"
+     ],
+     "id": "prt_0bb7eeb65001Z1IajmwWYLr9jj",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7ee386001kIYQWfCkFC1WN5"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0bb7ec5b8001k1XMpwEWno2Fse",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00447638,
+    "tokens": {
+     "total": 40322,
+     "input": 5000,
+     "output": 587,
+     "reasoning": 189,
+     "cache": {
+      "write": 0,
+      "read": 34546
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789852052336,
+     "completed": 1789852056178
+    },
+    "finish": "stop",
+    "id": "msg_0bb7eeb70001IEcUauCiAKYjzt",
+    "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs"
+   },
+   "parts": [
+    {
+     "snapshot": "6f9f47ecaf9424360ca32837b2aa044cbcd510d8",
+     "type": "step-start",
+     "id": "prt_0bb7ef4f0001ty7PYF5xK6YfJu",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7eeb70001IEcUauCiAKYjzt"
+    },
+    {
+     "type": "text",
+     "text": "- **R1**: Autenticação (P21, contrato-api.md)\n- **R2**: Perfil de Organização (P22, RN-101, contrato-api.md)\n- **R3**: Perfil de Leitura (P23, contrato-api.md)\n- **R4**: Existência de Atividade (P24, contrato-api.md)\n- **R5**: Corpo de Requisição (contrato-api.md)\n- **R6**: Ordem das Verificações (P25, contrato-api.md)\n- **R7**: Quantidade de Encontros (P1, RN-102, RN-103)\n- **R8**: Validade do Encontro (P2, RN-104, RN-105)\n- **R9**: Sem Sobreposição na Atividade (P2, P12, RN-106)\n- **R10**: Conflito de Sala e Intervalo (P3, RN-108)\n- **R11**: Capacidade da Sala (P3, P13, RN-107)\n- **R12**: Sala Inexistente no POST (P19, contrato-api.md)\n- **R13**: Validação de Título (P13, contrato-api.md)\n- **R14**: Campos Não Editáveis no PATCH (P4, P17, P19, RN-110)\n- **R15**: Atividade Já Iniciada no Cancelamento (P4, P6, RN-112)\n- **R16**: Atividade Cancelada (P10, RN-113)\n- **R17**: Vagas Abaixo dos Inscritos no PATCH (P7, P14, RN-111)\n- **R18**: Carga Horária Calculada (P9, RN-109)\n- **R19**: IDs de Encontros (P18, contrato-api.md)\n- **R20**: Cancelamento Sem Corpo (P20)\n- **R21**: Filtros de Listagem (P8, RN-116)\n- **R22**: Ordenação de Resultados (P16, RN-115)\n- **R23**: Situação Calculada (P5, P6, RN-114)\n- **R24**: Métrica de Ocupação (P11, RN-111, contrato-api.md)\n\nFalta alguma regra?",
+     "time": {
+      "start": 1789852054774,
+      "end": 1789852056090
+     },
+     "id": "prt_0bb7ef4f6001SkAT7R1vRXp4Ys",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7eeb70001IEcUauCiAKYjzt"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "6f9f47ecaf9424360ca32837b2aa044cbcd510d8",
+     "type": "step-finish",
+     "tokens": {
+      "total": 40322,
+      "input": 5000,
+      "output": 587,
+      "reasoning": 189,
+      "cache": {
+       "write": 0,
+       "read": 34546
+      }
+     },
+     "cost": 0.00447638,
+     "id": "prt_0bb7efa2c00115B4g281voYGsU",
+     "sessionID": "ses_f4484944bffeZaDxAVTyICwTXs",
+     "messageID": "msg_0bb7eeb70001IEcUauCiAKYjzt"
+    }
+   ]
+  }
+ ]
+}

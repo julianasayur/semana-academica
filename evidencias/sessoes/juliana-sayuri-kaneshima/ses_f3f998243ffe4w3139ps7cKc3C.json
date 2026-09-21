@@ -1,0 +1,642 @@
+{
+ "info": {
+  "id": "ses_f3f998243ffe4w3139ps7cKc3C",
+  "slug": "neon-engine",
+  "projectID": "f0e37ae0e184b898118e8c2e53af97bc0dab3160",
+  "directory": "/home/juliana/semana-academica",
+  "path": "",
+  "title": "Auditoria módulo M1 com specs/M1-grade.md",
+  "agent": "build",
+  "model": {
+   "id": "gemini-3.5-flash-lite",
+   "providerID": "google"
+  },
+  "version": "1.18.31",
+  "summary": {
+   "additions": 0,
+   "deletions": 0,
+   "files": 0
+  },
+  "cost": 0.05008586,
+  "tokens": {
+   "input": 89191,
+   "output": 8085,
+   "reasoning": 1049,
+   "cache": {
+    "read": 16452,
+    "write": 0
+   }
+  },
+  "time": {
+   "created": 1789934337469,
+   "updated": 1789935278803
+  }
+ },
+ "messages": [
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789934337621
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.5-flash-lite"
+    },
+    "summary": {
+     "diffs": []
+    },
+    "id": "msg_0c0667e54001Bk8fKYiI9k04sI",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "@auditor audite o módulo M1 contra specs/M1-grade.md",
+     "id": "prt_0c0667e62001o7v2JLG2LYnUc6",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0667e54001Bk8fKYiI9k04sI"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0667e54001Bk8fKYiI9k04sI",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0039148,
+    "tokens": {
+     "total": 10006,
+     "input": 9591,
+     "output": 14,
+     "reasoning": 401,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789934337777,
+     "completed": 1789934345162
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c0667ef1001cTTc12jR1RWFUu",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-start",
+     "id": "prt_0c06696ca0012Z0QmptQ5SWHjx",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0667ef1001cTTc12jR1RWFUu"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Considering Available Tools**\n\nOkay, I'm now focusing on available tools and subagents to audit module M1. It appears the `task` tool can launch agents, and I've identified the `auditor` subagent as a potential fit for this. I need to figure out how to best utilize these resources to conduct the audit against `specs/M1-grade.md`.\n\n\n",
+     "time": {
+      "start": 1789934343898,
+      "end": 1789934344214
+     },
+     "id": "prt_0c06696da001ws5GhrMFMzwTh0",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0667ef1001cTTc12jR1RWFUu"
+    },
+    {
+     "type": "tool",
+     "tool": "glob",
+     "callID": "PNZmxtjyQNWeoaPe",
+     "state": {
+      "status": "completed",
+      "input": {
+       "pattern": "*"
+      },
+      "output": "[6884 caracteres omitidos]",
+      "title": "",
+      "time": {
+       "start": 1789934344186,
+       "end": 1789934344444
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "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"
+      }
+     },
+     "id": "prt_0c06697bf001pNl4QeZ4R13R30",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0667ef1001cTTc12jR1RWFUu"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-finish",
+     "tokens": {
+      "total": 10006,
+      "input": 9591,
+      "output": 14,
+      "reasoning": 401,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0039148,
+     "id": "prt_0c0669ab100175NodjlCtlI2Fy",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0667ef1001cTTc12jR1RWFUu"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0667e54001Bk8fKYiI9k04sI",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0040486,
+    "tokens": {
+     "total": 12894,
+     "input": 12812,
+     "output": 35,
+     "reasoning": 47,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789934345187,
+     "completed": 1789934347934
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c0669be2001OEvR53sVvXwqjQ",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-start",
+     "id": "prt_0c066a27f001CQPwztSMroelDf",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0669be2001OEvR53sVvXwqjQ"
+    },
+    {
+     "type": "tool",
+     "tool": "read",
+     "callID": "7jC40sdNXQVPTGCt",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/home/juliana/semana-academica/.opencode/agent/auditor.md"
+      },
+      "output": "[4560 caracteres omitidos]",
+      "title": ".opencode/agent/auditor.md",
+      "time": {
+       "start": 1789934346925,
+       "end": 1789934347216
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "Er4CCrsCAWkUfRNGCsNC559t0Xis5Tj48ahWV9udFpGD+6uOnw6Q4mtiFZSVugRaLmsbAPjIB7fhzJNVyhPKwVwTYXoBXZjQNdV5ZiN6KCUq0oRdqRzXpflA6b53h4h2z8SVelnGE5w52wuXktDW3EzuDu9V+1+fve6wj0TXGwiDqNPfeihzeheZJcOv+HiGMGYkVI4NK6W3GK9qCrYSmfChZhmjLa2o0jEv2w0ZVE1AHq7+70qQHof/8V3gcwlbUSX4p1ktgeu87ELaWV60Vh9Hnt3II0b3kmxO1HfPitstzfY3IP4QEwD3G1kiJUQevx94ELmPnBNc5Q8MqWe3bBQsLZiT3bDUEBC4zDKcWLoDsbOUEfpAzZNEmv82NldJDm8Wqf2ZnHtnzVy36REZZucAkZwpF1cEIA1UenE3OKLd"
+      }
+     },
+     "id": "prt_0c066a28b00187aL6X64Na8pbs",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0669be2001OEvR53sVvXwqjQ"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-finish",
+     "tokens": {
+      "total": 12894,
+      "input": 12812,
+      "output": 35,
+      "reasoning": 47,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0040486,
+     "id": "prt_0c066a50d0019iJQDNEhHLbPWW",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0669be2001OEvR53sVvXwqjQ"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0667e54001Bk8fKYiI9k04sI",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0052976,
+    "tokens": {
+     "total": 14806,
+     "input": 14417,
+     "output": 116,
+     "reasoning": 273,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789934347953,
+     "completed": 1789934471508
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c066a6b1001j6A78ROetsT1fm",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-start",
+     "id": "prt_0c066af4d001MxeVoViEpab0ii",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c066a6b1001j6A78ROetsT1fm"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Defining the Audit Task**\n\nOkay, the task is now clearly defined. I'm focusing on setting up the `task` tool call: the `subagent_type` will be \"auditor\", the description will be \"Auditar módulo M1 contra specs/M1-grade.md\", and the prompt will provide instructions for module M1.\n\n\n",
+     "time": {
+      "start": 1789934350169,
+      "end": 1789934350742
+     },
+     "id": "prt_0c066af59001mmUDi8gx9Maj69",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c066a6b1001j6A78ROetsT1fm"
+    },
+    {
+     "type": "tool",
+     "tool": "task",
+     "callID": "Q8voYkrU5giRTFES",
+     "state": {
+      "status": "completed",
+      "input": {
+       "prompt": "Audite o módulo M1 contra specs/M1-grade.md seguindo rigorosamente as instruções do agente auditor. Leia a spec em specs/M1-grade.md, a entrevista em entrevistas/M1-grade.md, o projeto.json e os testes em api/verificacoes/. Retorne o parecer completo no formato especificado.",
+       "description": "Auditar módulo M1 contra specs/M1-grade.md",
+       "subagent_type": "auditor"
+      },
+      "output": "<task id=\"ses_f3f994efeffeMyAQ5R4bwMdubD\" state=\"completed\">\n<task_result>\n## Matriz de rastreabilidade\n\n| Regra | Origem | Teste que comprova | Veredito |\n|---|---|---|---|\n| R1 | P21 | `api/verificacoes/M1-fatia1.spec.js:23`, `api/verificacoes/M1-fatia2.spec.js:142` | COMPROVADA |\n| R2 | P22 | `api/verificacoes/M1-fatia2.spec.js:23` (apenas para POST; PATCH e cancelamento sem teste) | PROVA FRACA |\n| R3 | P23 | `api/verificacoes/M1-fatia1.spec.js:39`, `api/verificacoes/M1-fatia3.spec.js:74` | COMPROVADA |\n| R4 | P24 | `api/verificacoes/M1-fatia1.spec.js:56` (apenas GET; PATCH e cancelamento com atividade inexistente sem teste) | PROVA FRACA |\n| R5 | P13, P25 | `api/verificacoes/M1-fatia2.spec.js:199` (apenas campos obrigatórios ausentes; formato malformado/não-JSON não testado) | PROVA FRACA |\n| R6 | P25 | `api/verificacoes/M1-fatia2.spec.js:142` (apenas 401 testado antes de outros erros; ordem completa 401 > 403 > 404 > 422 não testada) | PROVA FRACA |\n| R7 | P1 | `api/verificacoes/M1-fatia2.spec.js:69` (apenas palestra com 2 encontros; minicurso inválido não testado) | PROVA FRACA |\n| R8 | P2 | `api/verificacoes/M1-fatia2.spec.js:45`, `api/verificacoes/M1-fatia2.spec.js:223`, `api/verificacoes/M1-fatia2.spec.js:419`, `api/verificacoes/M1-fatia2.spec.js:438` | COMPROVADA |\n| R9 | P2, P12 | `api/verificacoes/M1-fatia2.spec.js:271` | COMPROVADA |\n| R10 | P3 | `api/verificacoes/M1-fatia2.spec.js:295`, `api/verificacoes/M1-fatia2.spec.js:356`, `api/verificacoes/M1-fatia2.spec.js:384` | COMPROVADA |\n| R11 | P3, P13 | `api/verificacoes/M1-fatia2.spec.js:247`, `api/verificacoes/M1-fatia2.spec.js:457` (apenas POST testado; PATCH não testado para capacidade) | PROVA FRACA |\n| R12 | P19 | `api/verificacoes/M1-fatia2.spec.js:93` | COMPROVADA |\n| R13 | P13 | `api/verificacoes/M1-fatia2.spec.js:118` | COMPROVADA |\n| R14 | P4, P17, P19 | `api/verificacoes/M1-fatia4.spec.js:29` | COMPROVADA |\n| R15 | P4, P6 | `api/verificacoes/M1-fatia4.spec.js:109` | COMPROVADA |\n| R16 | P10 | `api/verificacoes/M1-fatia4.spec.js:76` (apenas PATCH em cancelada; nova tentativa de cancelamento não testada) | PROVA FRACA |\n| R17 | P7, P14 | `api/verificacoes/M1-fatia4.spec.js:171` | COMPROVADA |\n| R18 | P9 | `api/verificacoes/M1-fatia2.spec.js:195` (calcula carga horária, mas envio do campo no corpo ignorado não testado explicitamente) | PROVA FRACA |\n| R19 | P18 | `api/verificacoes/M1-fatia2.spec.js:194` (verifica apenas prefixo `enc_`, formato de 8 hexadecimais e unicidade não testados) | PROVA FRACA |\n| R20 | P20 | `api/verificacoes/M1-fatia4.spec.js:215` | COMPROVADA |\n| R21 | P8 | `api/verificacoes/M1-fatia3.spec.js:23`, `api/verificacoes/M1-fatia3.spec.js:84` | COMPROVADA |\n| R22 | P6, P16 | `api/verificacoes/M1-fatia3.spec.js:192`, `api/verificacoes/M1-fatia1.spec.js:46` | COMPROVADA |\n| R23 | P5, P6 | `api/verificacoes/M1-fatia3.spec.js:109`, `api/verificacoes/M1-fatia3.spec.js:142` | COMPROVADA |\n| R24 | P11 | `api/verificacoes/M1-fatia4.spec.js:212` (apenas `ocupadas` testado; `vagasRestantes` e `emEspera` sem asserção em teste) | PROVA FRACA |\n\n## Suíte\n\n```\n> api@1.0.0 test\n> DB_PATH=:memory: MODO_TESTE=1 node --test --test-concurrency=1 \"verificacoes/*.spec.js\"\n\n✔ GET /salas sem X-Usuario -> 401 (116.964922ms)\n✔ GET /salas com X-Usuario inválido -> 401 (11.370561ms)\n✔ GET /salas com X-Usuario válido -> 200 (12.881992ms)\n✔ GET /atividades/:id sem X-Usuario -> 401 (18.117619ms)\n✔ GET /atividades/:id com ID inexistente -> 404 (12.774579ms)\n✔ POST /atividades por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO (123.428384ms)\n✔ POST /atividades com encontro durando 5 horas -> 422 ENCONTRO_INVALIDO (13.832974ms)\n✔ POST /atividades com palestra tendo 2 encontros -> 422 QUANTIDADE_DE_ENCONTROS (18.010675ms)\n✔ POST /atividades com salaId inexistente (critério 11) -> 422 DADOS_INVALIDOS (R12) (10.025981ms)\n✔ POST /atividades com titulo vazio -> 422 DADOS_INVALIDOS (13.251501ms)\n✔ POST /atividades com usuário inexistente -> 401 USUARIO_DESCONHECIDO (11.689761ms)\n✔ POST /atividades com sucesso -> 201 Atividade (R18, R19) (52.816419ms)\n✔ POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5) (8.266963ms)\n✔ POST /atividades com encontro atravessando a meia-noite (critério 22) -> 422 ENCONTRO_INVALIDO (R8) (11.827163ms)\n✔ POST /atividades com vagas superior à capacidade da sala (critério 10) -> 422 VAGAS_ACIMA_DA_CAPACIDADE (R11) (8.008002ms)\n✔ POST /atividades com dois encontros da mesma atividade sobrepostos no tempo (critério 8) -> 422 ENCONTRO_INVALIDO (R9) (6.626347ms)\n✔ POST /atividades com conflito de sala (menos de 15 min de intervalo, ex: 10:14) (critério 20) -> 409 CONFLITO_DE_SALA (R10) (17.507829ms)\n✔ R10, critério 20: encontro na mesma sala começando 15 min depois do fim do anterior (10:15) é aceito com 201 (13.323644ms)\n✔ R10, critério 21: encontro de atividade cancelada não gera CONFLITO_DE_SALA (23.68561ms)\n✔ R8: encontro com menos de 1 hora de duração -> 422 ENCONTRO_INVALIDO (7.540869ms)\n✔ R8: encontro fora do período de 19 a 23/10/2026 -> 422 ENCONTRO_INVALIDO (8.635257ms)\n✔ R11: vagas igual a 0 -> 422 DADOS_INVALIDOS (9.901938ms)\n✔ GET /atividades com filtros ?dia=2026-10-19&tipo=minicurso retorna apenas minicursos do dia especificado (critério 18) (165.023369ms)\n✔ GET /atividades?dia=2026-10-20 inclui encontro das 21:00 às 22:30 (critério 23) (13.577952ms)\n✔ Atividade cancelada aparece em GET /atividades com situação cancelada (critério 25) (20.411758ms)\n✔ Situação da atividade muda conforme o relógio de teste (prevista, em_andamento, encerrada) (critério 19, 26, R23) (32.633092ms)\n✔ GET /atividades ordena por início do 1º encontro e depois por título em ordem alfabética (R22) (21.961759ms)\n✔ PATCH /atividades/:id alterando salaId, tipo ou encontros retorna 422 CAMPO_NAO_EDITAVEL (critério 13, R14) (563.721677ms)\n✔ PATCH /atividades/:id em atividade já cancelada retorna 422 ATIVIDADE_CANCELADA (critério 15, R16) (141.875403ms)\n✔ POST /atividades/:id/cancelamento com relógio após ou exatamente no início do 1º encontro retorna 422 ATIVIDADE_JA_INICIADA (critérios 14, 24, R15) (143.118082ms)\n✔ PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais retorna 409 VAGAS_ABAIXO_DOS_INSCRITOS (critério 16, R17) (119.2259ms)\n✔ POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R20) (103.320756ms)\n✔ POST /_teste/reset deve resetar o sistema (214.074531ms)\n✔ GET /_teste/relogio deve retornar o relógio (13.352679ms)\n✔ PUT /_teste/relogio deve atualizar o relógio (26.90109ms)\nℹ tests 35\nℹ suites 0\nℹ pass 35\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 4001.319233\n```\n\n## Achados\n\n1. [PROVA FRACA] R2 — a spec exige que as rotas de escrita (`POST`, `PATCH`, `cancelamento`) recusem com `403 SOMENTE_ORGANIZACAO` se o usuário autenticado for `participante`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:23` valida apenas o `POST /atividades`, deixando `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sem verificação específica para esse perfil.\n2. [PROVA FRACA] R4 — a spec exige `404 NAO_ENCONTRADO` para operações em atividades específicas (`GET`, `PATCH`, `cancelamento`), mas o teste em `api/verificacoes/M1-fatia1.spec.js:56` cobre apenas o `GET /atividades/:id`, sem testar `PATCH` e `cancelamento` com atividade inexistente.\n3. [PROVA FRACA] R5 — a spec exige `422 DADOS_INVALIDOS` para corpo malformado, não-JSON ou campos obrigatórios ausentes/inválidos, mas o teste em `api/verificacoes/M1-fatia2.spec.js:199` cobre apenas ausência de campo obrigatório (`tipo`), sem testar requisições não-JSON ou malformadas.\n4. [PROVA FRACA] R6 — a spec define a ordem completa de prioridade de erros (401 > 403 > 404 > 422), mas o teste em `api/verificacoes/M1-fatia2.spec.js:142` valida apenas que `401` ocorre antes, sem testar a precedência entre 403, 404 e 422.\n5. [PROVA FRACA] R7 — a spec estabelece regras para minicursos (2 a 5 encontros) e palestras (1 encontro), mas o teste em `api/verificacoes/M1-fatia2.spec.js:69` valida apenas palestra com 2 encontros, sem testar minicursos inválidos (< 2 ou > 5 encontros).\n6. [PROVA FRACA] R11 — a spec exige validação de vagas tanto no `POST` quanto no `PATCH`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:247` cobre apenas o `POST`, sem verificar vagas acima da capacidade no `PATCH`.\n7. [PROVA FRACA] R16 — a spec determina que atividade cancelada não pode ser alterada nem cancelada novamente, mas o teste em `api/verificacoes/M1-fatia4.spec.js:76` valida apenas o `PATCH`, sem testar uma nova tentativa de cancelamento (`POST /atividades/:id/cancelamento`).\n8. [PROVA FRACA] R18 — a spec afirma que se o campo `cargaHorariaMinutos` for enviado no corpo, ele deve ser ignorado, mas o teste em `api/verificacoes/M1-fatia2.spec.js:195` apenas verifica que o campo é calculado corretamente pelo sistema, sem enviar o campo na requisição para testar se foi ignorado.\n9. [PROVA FRACA] R19 — a spec especifica que os IDs de encontros seguem o formato `enc_` + 8 hexadecimais minúsculos e são únicos em todo o sistema, mas o teste em `api/verificacoes/M1-fatia2.spec.js:194` verifica apenas o prefixo `enc_`, sem validar o formato de 8 hexadecimais ou a unicidade global.\n10. [PROVA FRACA] R24 — a spec define o cálculo de `ocupadas`, `vagasRestantes` e `emEspera`, mas o teste em `api/verificacoes/M1-fatia4.spec.js:212` valida apenas a métrica `ocupadas`, sem asserções sobre `vagasRestantes` e `emEspera`.\n\n## Veredito\n\nO módulo M1 pode ser aceito, desde que se complementem as suítes de teste para cobrir exaustivamente os cenários secundários apontados nas regras com prova fraca.\n</task_result>\n</task>",
+      "metadata": {
+       "parentSessionId": "ses_f3f998243ffe4w3139ps7cKc3C",
+       "sessionId": "ses_f3f994efeffeMyAQ5R4bwMdubD",
+       "model": {
+        "modelID": "gemini-3.5-flash-lite",
+        "providerID": "google"
+       },
+       "truncated": false
+      },
+      "title": "Auditar módulo M1 contra specs/M1-grade.md",
+      "time": {
+       "start": 1789934350616,
+       "end": 1789934470784
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "EpIJCo8JAWkUfRPo9TK0YoMxSgSEl99DklLWFO3fiIblMySCGrdWKMaF0mzxYOhI7csPCGD5snhdBzN8xkscRK/dgNBswMQqtqSgEv08f+MpBHQ6pTBsITc/efHVUjjbUg7fZQ6F9FGzi75+H+VzMzJk6ai7afTHFHKXGAotB3QzLKjCO67n4eOFx+kUYbjP1m1GJg4Q9x7j7chz+FyaFemc0GARlQpCzAOGiCyfihXK5UwQ2VD9hJRcMQ3xaWoPw7Lvh9BjHVdlbRLrWl1IgmMvOkfH/MTZgXfEAGLdHOH7YP9exr5irmbxSaaUuOIK7z2DgZSDMBo6acjUXZo2jLuqrsERw7wqaGVsN+V88jq+0jifNA8GQiIClAIAXbc4/YszAD5uA8kJoveGDvTRsXUaAGujesITLw2l4jpQeTEpnjfUXu8+HsjbnWPbgd6dN4S90rOonrOENaOuPZ28lWugnrKoq4I0GLjn5BrrPWERhxLwimba52iZhQxBepl4ZZYCGGwmeYFhc5ydnP+KQCUrpQYfVhEKguhJ+i7ddu9GdB476g4/Ej/qB+R3y4TFHFc8i4tIhO7ipiH3DcUPK+ac7T+1+J+qF08VhrKWY1e5bKXPPFEUvMbEfLI3MWrZGL+pzV2MX3QxNJzGwXQI0oCboGvPp0Bb/kJzcE/uu8k0eJJRPYHz5eJuJE3NoXrgVC8StXWoXHm7rOi8d8Slqm5BDcYfIzGKJu8sYWCAVlU1k7D3zWpAn9h0thu6QMc3Y3/Wr8mrWWnUJmyJ83KXqLji5rPoTW2weM+DKtB3xh9iDlAj6MaVaRI6Mw9gFWl5Qx2W4Gkhmz8rxGgXcC1Rud2P4tDhikvZo+gXWKDOqbVi6UUT27ZvUeHuac1Zn+0BLEmDEhTqaD34zFqraLSGBt5uG7xpED5vCNV5u+Uqu13f55/J4R1YFtj8Np5O4GBX3CkEHbmfN7w4py8cZw/GJ9/OOs6WpmczHaKXyn/ameFZItvrHG1srZyK/OR6TD/JuModuE59TWJJNcQ0/7jhXL/XWBMrjqISub9it1PuBbhKQPpgc20fSNx647mWhU86t3k/l7boBW+rOmYAHjb7OhyHBkbdhxjohTqvE5qici84QYxTn6oFIC+By7GMYg2qrU00d6deM4xnilK4temQkRcVSUeOzsJSSEuBfFC/SCX1xbquIwVO6xRisLqNgSOgNSCddD/MmAxhozOvgvfYV7OMEnV6T1JR/2/uCmRJvT2e6Guw3FCvMRJPIg9Tc59yClqns59Y2I6o11IRhDB/MC6GOHGLgY8doUFXv4fJsTauyaHb2fxV+Rl8lhJWvSjuVilts5lDVEC2Pre6F/lf+CVynBhhTg50LD3rMososjHVEPdzWUX3iJn21cQVanRY1orriO/ETpHfI5F5eMTRu2ivUTYkcqRyS0Kt0zDFyFJSD964TywXsrUr1KIfrk33IoxBgAr+rwjXFuZK4EXVj2Ut2Pj6htvVsC+eqkuGcBQaC8hwmxyZgiiK5/xZRhDzYnfNTuDFXqfyrlFqZwx5ap/gApGF"
+      }
+     },
+     "id": "prt_0c066b0e2001R1v7wvqirst7wL",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c066a6b1001j6A78ROetsT1fm"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-finish",
+     "tokens": {
+      "total": 14806,
+      "input": 14417,
+      "output": 116,
+      "reasoning": 273,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0052976,
+     "id": "prt_0c06887ff001i5SPteqwUTL4ta",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c066a6b1001j6A78ROetsT1fm"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0667e54001Bk8fKYiI9k04sI",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0155898,
+    "tokens": {
+     "total": 22838,
+     "input": 18866,
+     "output": 3922,
+     "reasoning": 50,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789934471534,
+     "completed": 1789934483024
+    },
+    "finish": "stop",
+    "id": "msg_0c068896e001JkPKRS2utJeLGm",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-start",
+     "id": "prt_0c068914b0014JRkbTIQy3gpP9",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c068896e001JkPKRS2utJeLGm"
+    },
+    {
+     "type": "text",
+     "text": "## Matriz de rastreabilidade\n\n| Regra | Origem | Teste que comprova | Veredito |\n|---|---|---|---|\n| R1 | P21 | `api/verificacoes/M1-fatia1.spec.js:23`, `api/verificacoes/M1-fatia2.spec.js:142` | COMPROVADA |\n| R2 | P22 | `api/verificacoes/M1-fatia2.spec.js:23` (apenas para POST; PATCH e cancelamento sem teste) | PROVA FRACA |\n| R3 | P23 | `api/verificacoes/M1-fatia1.spec.js:39`, `api/verificacoes/M1-fatia3.spec.js:74` | COMPROVADA |\n| R4 | P24 | `api/verificacoes/M1-fatia1.spec.js:56` (apenas GET; PATCH e cancelamento com atividade inexistente sem teste) | PROVA FRACA |\n| R5 | P13, P25 | `api/verificacoes/M1-fatia2.spec.js:199` (apenas campos obrigatórios ausentes; formato malformado/não-JSON não testado) | PROVA FRACA |\n| R6 | P25 | `api/verificacoes/M1-fatia2.spec.js:142` (apenas 401 testado antes de outros erros; ordem completa 401 > 403 > 404 > 422 não testada) | PROVA FRACA |\n| R7 | P1 | `api/verificacoes/M1-fatia2.spec.js:69` (apenas palestra com 2 encontros; minicurso inválido não testado) | PROVA FRACA |\n| R8 | P2 | `api/verificacoes/M1-fatia2.spec.js:45`, `api/verificacoes/M1-fatia2.spec.js:223`, `api/verificacoes/M1-fatia2.spec.js:419`, `api/verificacoes/M1-fatia2.spec.js:438` | COMPROVADA |\n| R9 | P2, P12 | `api/verificacoes/M1-fatia2.spec.js:271` | COMPROVADA |\n| R10 | P3 | `api/verificacoes/M1-fatia2.spec.js:295`, `api/verificacoes/M1-fatia2.spec.js:356`, `api/verificacoes/M1-fatia2.spec.js:384` | COMPROVADA |\n| R11 | P3, P13 | `api/verificacoes/M1-fatia2.spec.js:247`, `api/verificacoes/M1-fatia2.spec.js:457` (apenas POST testado; PATCH não testado para capacidade) | PROVA FRACA |\n| R12 | P19 | `api/verificacoes/M1-fatia2.spec.js:93` | COMPROVADA |\n| R13 | P13 | `api/verificacoes/M1-fatia2.spec.js:118` | COMPROVADA |\n| R14 | P4, P17, P19 | `api/verificacoes/M1-fatia4.spec.js:29` | COMPROVADA |\n| R15 | P4, P6 | `api/verificacoes/M1-fatia4.spec.js:109` | COMPROVADA |\n| R16 | P10 | `api/verificacoes/M1-fatia4.spec.js:76` (apenas PATCH em cancelada; nova tentativa de cancelamento não testada) | PROVA FRACA |\n| R17 | P7, P14 | `api/verificacoes/M1-fatia4.spec.js:171` | COMPROVADA |\n| R18 | P9 | `api/verificacoes/M1-fatia2.spec.js:195` (calcula carga horária, mas envio do campo no corpo ignorado não testado explicitamente) | PROVA FRACA |\n| R19 | P18 | `api/verificacoes/M1-fatia2.spec.js:194` (verifica apenas prefixo `enc_`, formato de 8 hexadecimais e unicidade não testados) | PROVA FRACA |\n| R20 | P20 | `api/verificacoes/M1-fatia4.spec.js:215` | COMPROVADA |\n| R21 | P8 | `api/verificacoes/M1-fatia3.spec.js:23`, `api/verificacoes/M1-fatia3.spec.js:84` | COMPROVADA |\n| R22 | P6, P16 | `api/verificacoes/M1-fatia3.spec.js:192`, `api/verificacoes/M1-fatia1.spec.js:46` | COMPROVADA |\n| R23 | P5, P6 | `api/verificacoes/M1-fatia3.spec.js:109`, `api/verificacoes/M1-fatia3.spec.js:142` | COMPROVADA |\n| R24 | P11 | `api/verificacoes/M1-fatia4.spec.js:212` (apenas `ocupadas` testado; `vagasRestantes` e `emEspera` sem asserção em teste) | PROVA FRACA |\n\n## Suíte\n\n```\n> api@1.0.0 test\n> DB_PATH=:memory: MODO_TESTE=1 node --test --test-concurrency=1 \"verificacoes/*.spec.js\"\n\n✔ GET /salas sem X-Usuario -> 401 (116.964922ms)\n✔ GET /salas com X-Usuario inválido -> 401 (11.370561ms)\n✔ GET /salas com X-Usuario válido -> 200 (12.881992ms)\n✔ GET /atividades/:id sem X-Usuario -> 401 (18.117619ms)\n✔ GET /atividades/:id com ID inexistente -> 404 (12.774579ms)\n✔ POST /atividades por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO (123.428384ms)\n✔ POST /atividades com encontro durando 5 horas -> 422 ENCONTRO_INVALIDO (13.832974ms)\n✔ POST /atividades com palestra tendo 2 encontros -> 422 QUANTIDADE_DE_ENCONTROS (18.010675ms)\n✔ POST /atividades com salaId inexistente (critério 11) -> 422 DADOS_INVALIDOS (R12) (10.025981ms)\n✔ POST /atividades com titulo vazio -> 422 DADOS_INVALIDOS (13.251501ms)\n✔ POST /atividades com usuário inexistente -> 401 USUARIO_DESCONHECIDO (11.689761ms)\n✔ POST /atividades com sucesso -> 201 Atividade (R18, R19) (52.816419ms)\n✔ POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5) (8.266963ms)\n✔ POST /atividades com encontro atravessando a meia-noite (critério 22) -> 422 ENCONTRO_INVALIDO (R8) (11.827163ms)\n✔ POST /atividades com vagas superior à capacidade da sala (critério 10) -> 422 VAGAS_ACIMA_DA_CAPACIDADE (R11) (8.008002ms)\n✔ POST /atividades com dois encontros da mesma atividade sobrepostos no tempo (critério 8) -> 422 ENCONTRO_INVALIDO (R9) (6.626347ms)\n✔ POST /atividades com conflito de sala (menos de 15 min de intervalo, ex: 10:14) (critério 20) -> 409 CONFLITO_DE_SALA (R10) (17.507829ms)\n✔ R10, critério 20: encontro na mesma sala começando 15 min depois do fim do anterior (10:15) é aceito com 201 (13.323644ms)\n✔ R10, critério 21: encontro de atividade cancelada não gera CONFLITO_DE_SALA (23.68561ms)\n✔ R8: encontro com menos de 1 hora de duração -> 422 ENCONTRO_INVALIDO (7.540869ms)\n✔ R8: encontro fora do período de 19 a 23/10/2026 -> 422 ENCONTRO_INVALIDO (8.635257ms)\n✔ R11: vagas igual a 0 -> 422 DADOS_INVALIDOS (9.901938ms)\n✔ GET /atividades com filtros ?dia=2026-10-19&tipo=minicurso retorna apenas minicursos do dia especificado (critério 18) (165.023369ms)\n✔ GET /atividades?dia=2026-10-20 inclui encontro das 21:00 às 22:30 (critério 23) (13.577952ms)\n✔ Atividade cancelada aparece em GET /atividades com situação cancelada (critério 25) (20.411758ms)\n✔ Situação da atividade muda conforme o relógio de teste (prevista, em_andamento, encerrada) (critério 19, 26, R23) (32.633092ms)\n✔ GET /atividades ordena por início do 1º encontro e depois por título em ordem alfabética (R22) (21.961759ms)\n✔ PATCH /atividades/:id alterando salaId, tipo ou encontros retorna 422 CAMPO_NAO_EDITAVEL (critério 13, R14) (563.721677ms)\n✔ PATCH /atividades/:id em atividade já cancelada retorna 422 ATIVIDADE_CANCELADA (critério 15, R16) (141.875403ms)\n✔ POST /atividades/:id/cancelamento com relógio após ou exatamente no início do 1º encontro retorna 422 ATIVIDADE_JA_INICIADA (critérios 14, 24, R15) (143.118082ms)\n✔ PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais retorna 409 VAGAS_ABAIXO_DOS_INSCRITOS (critério 16, R17) (119.2259ms)\n✔ POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R20) (103.320756ms)\n✔ POST /_teste/reset deve resetar o sistema (214.074531ms)\n✔ GET /_teste/relogio deve retornar o relógio (13.352679ms)\n✔ PUT /_teste/relogio deve atualizar o relógio (26.90109ms)\nℹ tests 35\nℹ suites 0\nℹ pass 35\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 4001.319233\n```\n\n## Achados\n\n1. [PROVA FRACA] R2 — a spec exige que as rotas de escrita (`POST`, `PATCH`, `cancelamento`) recusem com `403 SOMENTE_ORGANIZACAO` se o usuário autenticado for `participante`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:23` valida apenas o `POST /atividades`, deixando `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sem verificação específica para esse perfil.\n2. [PROVA FRACA] R4 — a spec exige `404 NAO_ENCONTRADO` para operações em atividades específicas (`GET`, `PATCH`, `cancelamento`), mas o teste em `api/verificacoes/M1-fatia1.spec.js:56` cobre apenas o `GET /atividades/:id`, sem testar `PATCH` e `cancelamento` com atividade inexistente.\n3. [PROVA FRACA] R5 — a spec exige `422 DADOS_INVALIDOS` para corpo malformado, não-JSON ou campos obrigatórios ausentes/inválidos, mas o teste em `api/verificacoes/M1-fatia2.spec.js:199` cobre apenas ausência de campo obrigatório (`tipo`), sem testar requisições não-JSON ou malformadas.\n4. [PROVA FRACA] R6 — a spec define a ordem completa de prioridade de erros (401 > 403 > 404 > 422), mas o teste em `api/verificacoes/M1-fatia2.spec.js:142` valida apenas que `401` ocorre antes, sem testar a precedência entre 403, 404 e 422.\n5. [PROVA FRACA] R7 — a spec estabelece regras para minicursos (2 a 5 encontros) e palestras (1 encontro), mas o teste em `api/verificacoes/M1-fatia2.spec.js:69` valida apenas palestra com 2 encontros, sem testar minicursos inválidos (< 2 ou > 5 encontros).\n6. [PROVA FRACA] R11 — a spec exige validação de vagas tanto no `POST` quanto no `PATCH`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:247` cobre apenas o `POST`, sem verificar vagas acima da capacidade no `PATCH`.\n7. [PROVA FRACA] R16 — a spec determina que atividade cancelada não pode ser alterada nem cancelada novamente, mas o teste em `api/verificacoes/M1-fatia4.spec.js:76` valida apenas o `PATCH`, sem testar uma nova tentativa de cancelamento (`POST /atividades/:id/cancelamento`).\n8. [PROVA FRACA] R18 — a spec afirma que se o campo `cargaHorariaMinutos` for enviado no corpo, ele deve ser ignorado, mas o teste em `api/verificacoes/M1-fatia2.spec.js:195` apenas verifica que o campo é calculado corretamente pelo sistema, sem enviar o campo na requisição para testar se foi ignorado.\n9. [PROVA FRACA] R19 — a spec especifica que os IDs de encontros seguem o formato `enc_` + 8 hexadecimais minúsculos e são únicos em todo o sistema, mas o teste em `api/verificacoes/M1-fatia2.spec.js:194` verifica apenas o prefixo `enc_`, sem validar o formato de 8 hexadecimais ou a unicidade global.\n10. [PROVA FRACA] R24 — a spec define o cálculo de `ocupadas`, `vagasRestantes` e `emEspera`, mas o teste em `api/verificacoes/M1-fatia4.spec.js:212` valida apenas a métrica `ocupadas`, sem asserções sobre `vagasRestantes` e `emEspera`.\n\n## Veredito\n\nO módulo M1 pode ser aceito, desde que se complementem as suítes de teste para cobrir exaustivamente os cenários secundários apontados nas regras com prova fraca.",
+     "time": {
+      "start": 1789934473556,
+      "end": 1789934482473
+     },
+     "id": "prt_0c06891540017Qh59P8cocMo4O",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c068896e001JkPKRS2utJeLGm"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "036df0f117d17ae8810f174bb8cb624e163d9e79",
+     "type": "step-finish",
+     "tokens": {
+      "total": 22838,
+      "input": 18866,
+      "output": 3922,
+      "reasoning": 50,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0155898,
+     "id": "prt_0c068b56f001IA4Q2hsW6iI6Qg",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c068896e001JkPKRS2utJeLGm"
+    }
+   ]
+  },
+  {
+   "info": {
+    "role": "user",
+    "time": {
+     "created": 1789935260824
+    },
+    "agent": "build",
+    "model": {
+     "providerID": "google",
+     "modelID": "gemini-3.5-flash-lite"
+    },
+    "summary": {
+     "diffs": [
+      {
+       "file": "auditorias/M1-2026-09-20.md",
+       "patch": "Index: auditorias/M1-2026-09-20.md\n===================================================================\n--- auditorias/M1-2026-09-20.md\t\n+++ auditorias/M1-2026-09-20.md\t\n@@ -0,0 +1,96 @@\n+## Matriz de rastreabilidade\n+\n+| Regra | Origem | Teste que comprova | Veredito |\n+|---|---|---|---|\n+| R1 | P21 | `api/verificacoes/M1-fatia1.spec.js:23`, `api/verificacoes/M1-fatia2.spec.js:142` | COMPROVADA |\n+| R2 | P22 | `api/verificacoes/M1-fatia2.spec.js:23` (apenas para POST; PATCH e cancelamento sem teste) | PROVA FRACA |\n+| R3 | P23 | `api/verificacoes/M1-fatia1.spec.js:39`, `api/verificacoes/M1-fatia3.spec.js:74` | COMPROVADA |\n+| R4 | P24 | `api/verificacoes/M1-fatia1.spec.js:56` (apenas GET; PATCH e cancelamento com atividade inexistente sem teste) | PROVA FRACA |\n+| R5 | P13, P25 | `api/verificacoes/M1-fatia2.spec.js:199` (apenas campos obrigatórios ausentes; formato malformado/não-JSON não testado) | PROVA FRACA |\n+| R6 | P25 | `api/verificacoes/M1-fatia2.spec.js:142` (apenas 401 testado antes de outros erros; ordem completa 401 > 403 > 404 > 422 não testada) | PROVA FRACA |\n+| R7 | P1 | `api/verificacoes/M1-fatia2.spec.js:69` (apenas palestra com 2 encontros; minicurso inválido não testado) | PROVA FRACA |\n+| R8 | P2 | `api/verificacoes/M1-fatia2.spec.js:45`, `api/verificacoes/M1-fatia2.spec.js:223`, `api/verificacoes/M1-fatia2.spec.js:419`, `api/verificacoes/M1-fatia2.spec.js:438` | COMPROVADA |\n+| R9 | P2, P12 | `api/verificacoes/M1-fatia2.spec.js:271` | COMPROVADA |\n+| R10 | P3 | `api/verificacoes/M1-fatia2.spec.js:295`, `api/verificacoes/M1-fatia2.spec.js:356`, `api/verificacoes/M1-fatia2.spec.js:384` | COMPROVADA |\n+| R11 | P3, P13 | `api/verificacoes/M1-fatia2.spec.js:247`, `api/verificacoes/M1-fatia2.spec.js:457` (apenas POST testado; PATCH não testado para capacidade) | PROVA FRACA |\n+| R12 | P19 | `api/verificacoes/M1-fatia2.spec.js:93` | COMPROVADA |\n+| R13 | P13 | `api/verificacoes/M1-fatia2.spec.js:118` | COMPROVADA |\n+| R14 | P4, P17, P19 | `api/verificacoes/M1-fatia4.spec.js:29` | COMPROVADA |\n+| R15 | P4, P6 | `api/verificacoes/M1-fatia4.spec.js:109` | COMPROVADA |\n+| R16 | P10 | `api/verificacoes/M1-fatia4.spec.js:76` (apenas PATCH em cancelada; nova tentativa de cancelamento não testada) | PROVA FRACA |\n+| R17 | P7, P14 | `api/verificacoes/M1-fatia4.spec.js:171` | COMPROVADA |\n+| R18 | P9 | `api/verificacoes/M1-fatia2.spec.js:195` (calcula carga horária, mas envio do campo no corpo ignorado não testado explicitamente) | PROVA FRACA |\n+| R19 | P18 | `api/verificacoes/M1-fatia2.spec.js:194` (verifica apenas prefixo `enc_`, formato de 8 hexadecimais e unicidade não testados) | PROVA FRACA |\n+| R20 | P20 | `api/verificacoes/M1-fatia4.spec.js:215` | COMPROVADA |\n+| R21 | P8 | `api/verificacoes/M1-fatia3.spec.js:23`, `api/verificacoes/M1-fatia3.spec.js:84` | COMPROVADA |\n+| R22 | P6, P16 | `api/verificacoes/M1-fatia3.spec.js:192`, `api/verificacoes/M1-fatia1.spec.js:46` | COMPROVADA |\n+| R23 | P5, P6 | `api/verificacoes/M1-fatia3.spec.js:109`, `api/verificacoes/M1-fatia3.spec.js:142` | COMPROVADA |\n+| R24 | P11 | `api/verificacoes/M1-fatia4.spec.js:212` (apenas `ocupadas` testado; `vagasRestantes` e `emEspera` sem asserção em teste) | PROVA FRACA |\n+\n+## Suíte\n+\n+```\n+> api@1.0.0 test\n+> DB_PATH=:memory: MODO_TESTE=1 node --test --test-concurrency=1 \"verificacoes/*.spec.js\"\n+\n+✔ GET /salas sem X-Usuario -> 401 (116.964922ms)\n+✔ GET /salas com X-Usuario inválido -> 401 (11.370561ms)\n+✔ GET /salas com X-Usuario válido -> 200 (12.881992ms)\n+✔ GET /atividades/:id sem X-Usuario -> 401 (18.117619ms)\n+✔ GET /atividades/:id com ID inexistente -> 404 (12.774579ms)\n+✔ POST /atividades por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO (123.428384ms)\n+✔ POST /atividades com encontro durando 5 horas -> 422 ENCONTRO_INVALIDO (13.832974ms)\n+✔ POST /atividades com palestra tendo 2 encontros -> 422 QUANTIDADE_DE_ENCONTROS (18.010675ms)\n+✔ POST /atividades com salaId inexistente (critério 11) -> 422 DADOS_INVALIDOS (R12) (10.025981ms)\n+✔ POST /atividades com titulo vazio -> 422 DADOS_INVALIDOS (13.251501ms)\n+✔ POST /atividades com usuário inexistente -> 401 USUARIO_DESCONHECIDO (11.689761ms)\n+✔ POST /atividades com sucesso -> 201 Atividade (R18, R19) (52.816419ms)\n+✔ POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5) (8.266963ms)\n+✔ POST /atividades com encontro atravessando a meia-noite (critério 22) -> 422 ENCONTRO_INVALIDO (R8) (11.827163ms)\n+✔ POST /atividades com vagas superior à capacidade da sala (critério 10) -> 422 VAGAS_ACIMA_DA_CAPACIDADE (R11) (8.008002ms)\n+✔ POST /atividades com dois encontros da mesma atividade sobrepostos no tempo (critério 8) -> 422 ENCONTRO_INVALIDO (R9) (6.626347ms)\n+✔ POST /atividades com conflito de sala (menos de 15 min de intervalo, ex: 10:14) (critério 20) -> 409 CONFLITO_DE_SALA (R10) (17.507829ms)\n+✔ R10, critério 20: encontro na mesma sala começando 15 min depois do fim do anterior (10:15) é aceito com 201 (13.323644ms)\n+✔ R10, critério 21: encontro de atividade cancelada não gera CONFLITO_DE_SALA (23.68561ms)\n+✔ R8: encontro com menos de 1 hora de duração -> 422 ENCONTRO_INVALIDO (7.540869ms)\n+✔ R8: encontro fora do período de 19 a 23/10/2026 -> 422 ENCONTRO_INVALIDO (8.635257ms)\n+✔ R11: vagas igual a 0 -> 422 DADOS_INVALIDOS (9.901938ms)\n+✔ GET /atividades com filtros ?dia=2026-10-19&tipo=minicurso retorna apenas minicursos do dia especificado (critério 18) (165.023369ms)\n+✔ GET /atividades?dia=2026-10-20 inclui encontro das 21:00 às 22:30 (critério 23) (13.577952ms)\n+✔ Atividade cancelada aparece em GET /atividades com situação cancelada (critério 25) (20.411758ms)\n+✔ Situação da atividade muda conforme o relógio de teste (prevista, em_andamento, encerrada) (critério 19, 26, R23) (32.633092ms)\n+✔ GET /atividades ordena por início do 1º encontro e depois por título em ordem alfabética (R22) (21.961759ms)\n+✔ PATCH /atividades/:id alterando salaId, tipo ou encontros retorna 422 CAMPO_NAO_EDITAVEL (critério 13, R14) (563.721677ms)\n+✔ PATCH /atividades/:id em atividade já cancelada retorna 422 ATIVIDADE_CANCELADA (critério 15, R16) (141.875403ms)\n+✔ POST /atividades/:id/cancelamento com relógio após ou exatamente no início do 1º encontro retorna 422 ATIVIDADE_JA_INICIADA (critérios 14, 24, R15) (143.118082ms)\n+✔ PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais retorna 409 VAGAS_ABAIXO_DOS_INSCRITOS (critério 16, R17) (119.2259ms)\n+✔ POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R20) (103.320756ms)\n+✔ POST /_teste/reset deve resetar o sistema (214.074531ms)\n+✔ GET /_teste/relogio deve retornar o relógio (13.352679ms)\n+✔ PUT /_teste/relogio deve atualizar o relógio (26.90109ms)\n+ℹ tests 35\n+ℹ suites 0\n+ℹ pass 35\n+ℹ fail 0\n+ℹ cancelled 0\n+ℹ skipped 0\n+ℹ todo 0\n+ℹ duration_ms 4001.319233\n+```\n+\n+## Achados\n+\n+1. [PROVA FRACA] R2 — a spec exige que as rotas de escrita (`POST`, `PATCH`, `cancelamento`) recusem com `403 SOMENTE_ORGANIZACAO` se o usuário autenticado for `participante`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:23` valida apenas o `POST /atividades`, deixando `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sem verificação específica para esse perfil.\n+2. [PROVA FRACA] R4 — a spec exige `404 NAO_ENCONTRADO` para operações em atividades específicas (`GET`, `PATCH`, `cancelamento`), mas o teste em `api/verificacoes/M1-fatia1.spec.js:56` cobre apenas o `GET /atividades/:id`, sem testar `PATCH` e `cancelamento` com atividade inexistente.\n+3. [PROVA FRACA] R5 — a spec exige `422 DADOS_INVALIDOS` para corpo malformado, não-JSON ou campos obrigatórios ausentes/inválidos, mas o teste em `api/verificacoes/M1-fatia2.spec.js:199` cobre apenas ausência de campo obrigatório (`tipo`), sem testar requisições não-JSON ou malformadas.\n+4. [PROVA FRACA] R6 — a spec define a ordem completa de prioridade de erros (401 > 403 > 404 > 422), mas o teste em `api/verificacoes/M1-fatia2.spec.js:142` valida apenas que `401` ocorre antes, sem testar a precedência entre 403, 404 e 422.\n+5. [PROVA FRACA] R7 — a spec estabelece regras para minicursos (2 a 5 encontros) e palestras (1 encontro), mas o teste em `api/verificacoes/M1-fatia2.spec.js:69` valida apenas palestra com 2 encontros, sem testar minicursos inválidos (< 2 ou > 5 encontros).\n+6. [PROVA FRACA] R11 — a spec exige validação de vagas tanto no `POST` quanto no `PATCH`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:247` cobre apenas o `POST`, sem verificar vagas acima da capacidade no `PATCH`.\n+7. [PROVA FRACA] R16 — a spec determina que atividade cancelada não pode ser alterada nem cancelada novamente, mas o teste em `api/verificacoes/M1-fatia4.spec.js:76` valida apenas o `PATCH`, sem testar uma nova tentativa de cancelamento (`POST /atividades/:id/cancelamento`).\n+8. [PROVA FRACA] R18 — a spec afirma que se o campo `cargaHorariaMinutos` for enviado no corpo, ele deve ser ignorado, mas o teste em `api/verificacoes/M1-fatia2.spec.js:195` apenas verifica que o campo é calculado corretamente pelo sistema, sem enviar o campo na requisição para testar se foi ignorado.\n+9. [PROVA FRACA] R19 — a spec especifica que os IDs de encontros seguem o formato `enc_` + 8 hexadecimais minúsculos e são únicos em todo o sistema, mas o teste em `api/verificacoes/M1-fatia2.spec.js:194` verifica apenas o prefixo `enc_`, sem validar o formato de 8 hexadecimais ou a unicidade global.\n+10. [PROVA FRACA] R24 — a spec define o cálculo de `ocupadas`, `vagasRestantes` e `emEspera`, mas o teste em `api/verificacoes/M1-fatia4.spec.js:212` valida apenas a métrica `ocupadas`, sem asserções sobre `vagasRestantes` e `emEspera`.\n+\n+## Veredito\n+\n+O módulo M1 pode ser aceito, desde que se complementem as suítes de teste para cobrir exaustivamente os cenários secundários apontados nas regras com prova fraca.\n",
+       "additions": 96,
+       "deletions": 0,
+       "status": "modified"
+      }
+     ]
+    },
+    "id": "msg_0c0749498001FGswhvKSO5CNFf",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "type": "text",
+     "text": "Salve o seu parecer completo da auditoria, sem alterar nada, em auditorias/M1-2026-09-20.md",
+     "id": "prt_0c07494a8001myQ0xiXBBwotr9",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c0749498001FGswhvKSO5CNFf"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0749498001FGswhvKSO5CNFf",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.0173616,
+    "tokens": {
+     "total": 27028,
+     "input": 22822,
+     "output": 3973,
+     "reasoning": 233,
+     "cache": {
+      "write": 0,
+      "read": 0
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789935260914,
+     "completed": 1789935275793
+    },
+    "finish": "tool-calls",
+    "id": "msg_0c07494f2001K8NPGFC9V4mvtY",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "09587ac5500da142c57662a14f7aeb44a89000e2",
+     "type": "step-start",
+     "id": "prt_0c074ac5e001n13b1f3t1pGDnb",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c07494f2001K8NPGFC9V4mvtY"
+    },
+    {
+     "type": "reasoning",
+     "text": "**Verifying Report Location**\n\nOkay, I'm verifying the intended location for the audit report. I need to save the complete report into `auditorias/M1-2026-09-20.md`, without any modifications. I've already confirmed the existence of `auditorias/` through earlier globbing, where I noted `auditorias/.gitkeep`.\n\n\n",
+     "time": {
+      "start": 1789935266927,
+      "end": 1789935274727
+     },
+     "id": "prt_0c074ac6f0016pHlLtsM9Lt9Yq",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c07494f2001K8NPGFC9V4mvtY"
+    },
+    {
+     "type": "tool",
+     "tool": "write",
+     "callID": "gZog81qiOM71RqN3",
+     "state": {
+      "status": "completed",
+      "input": {
+       "filePath": "/home/juliana/semana-academica/auditorias/M1-2026-09-20.md",
+       "content": "## Matriz de rastreabilidade\n\n| Regra | Origem | Teste que comprova | Veredito |\n|---|---|---|---|\n| R1 | P21 | `api/verificacoes/M1-fatia1.spec.js:23`, `api/verificacoes/M1-fatia2.spec.js:142` | COMPROVADA |\n| R2 | P22 | `api/verificacoes/M1-fatia2.spec.js:23` (apenas para POST; PATCH e cancelamento sem teste) | PROVA FRACA |\n| R3 | P23 | `api/verificacoes/M1-fatia1.spec.js:39`, `api/verificacoes/M1-fatia3.spec.js:74` | COMPROVADA |\n| R4 | P24 | `api/verificacoes/M1-fatia1.spec.js:56` (apenas GET; PATCH e cancelamento com atividade inexistente sem teste) | PROVA FRACA |\n| R5 | P13, P25 | `api/verificacoes/M1-fatia2.spec.js:199` (apenas campos obrigatórios ausentes; formato malformado/não-JSON não testado) | PROVA FRACA |\n| R6 | P25 | `api/verificacoes/M1-fatia2.spec.js:142` (apenas 401 testado antes de outros erros; ordem completa 401 > 403 > 404 > 422 não testada) | PROVA FRACA |\n| R7 | P1 | `api/verificacoes/M1-fatia2.spec.js:69` (apenas palestra com 2 encontros; minicurso inválido não testado) | PROVA FRACA |\n| R8 | P2 | `api/verificacoes/M1-fatia2.spec.js:45`, `api/verificacoes/M1-fatia2.spec.js:223`, `api/verificacoes/M1-fatia2.spec.js:419`, `api/verificacoes/M1-fatia2.spec.js:438` | COMPROVADA |\n| R9 | P2, P12 | `api/verificacoes/M1-fatia2.spec.js:271` | COMPROVADA |\n| R10 | P3 | `api/verificacoes/M1-fatia2.spec.js:295`, `api/verificacoes/M1-fatia2.spec.js:356`, `api/verificacoes/M1-fatia2.spec.js:384` | COMPROVADA |\n| R11 | P3, P13 | `api/verificacoes/M1-fatia2.spec.js:247`, `api/verificacoes/M1-fatia2.spec.js:457` (apenas POST testado; PATCH não testado para capacidade) | PROVA FRACA |\n| R12 | P19 | `api/verificacoes/M1-fatia2.spec.js:93` | COMPROVADA |\n| R13 | P13 | `api/verificacoes/M1-fatia2.spec.js:118` | COMPROVADA |\n| R14 | P4, P17, P19 | `api/verificacoes/M1-fatia4.spec.js:29` | COMPROVADA |\n| R15 | P4, P6 | `api/verificacoes/M1-fatia4.spec.js:109` | COMPROVADA |\n| R16 | P10 | `api/verificacoes/M1-fatia4.spec.js:76` (apenas PATCH em cancelada; nova tentativa de cancelamento não testada) | PROVA FRACA |\n| R17 | P7, P14 | `api/verificacoes/M1-fatia4.spec.js:171` | COMPROVADA |\n| R18 | P9 | `api/verificacoes/M1-fatia2.spec.js:195` (calcula carga horária, mas envio do campo no corpo ignorado não testado explicitamente) | PROVA FRACA |\n| R19 | P18 | `api/verificacoes/M1-fatia2.spec.js:194` (verifica apenas prefixo `enc_`, formato de 8 hexadecimais e unicidade não testados) | PROVA FRACA |\n| R20 | P20 | `api/verificacoes/M1-fatia4.spec.js:215` | COMPROVADA |\n| R21 | P8 | `api/verificacoes/M1-fatia3.spec.js:23`, `api/verificacoes/M1-fatia3.spec.js:84` | COMPROVADA |\n| R22 | P6, P16 | `api/verificacoes/M1-fatia3.spec.js:192`, `api/verificacoes/M1-fatia1.spec.js:46` | COMPROVADA |\n| R23 | P5, P6 | `api/verificacoes/M1-fatia3.spec.js:109`, `api/verificacoes/M1-fatia3.spec.js:142` | COMPROVADA |\n| R24 | P11 | `api/verificacoes/M1-fatia4.spec.js:212` (apenas `ocupadas` testado; `vagasRestantes` e `emEspera` sem asserção em teste) | PROVA FRACA |\n\n## Suíte\n\n```\n> api@1.0.0 test\n> DB_PATH=:memory: MODO_TESTE=1 node --test --test-concurrency=1 \"verificacoes/*.spec.js\"\n\n✔ GET /salas sem X-Usuario -> 401 (116.964922ms)\n✔ GET /salas com X-Usuario inválido -> 401 (11.370561ms)\n✔ GET /salas com X-Usuario válido -> 200 (12.881992ms)\n✔ GET /atividades/:id sem X-Usuario -> 401 (18.117619ms)\n✔ GET /atividades/:id com ID inexistente -> 404 (12.774579ms)\n✔ POST /atividades por usuário com papel participante -> 403 SOMENTE_ORGANIZACAO (123.428384ms)\n✔ POST /atividades com encontro durando 5 horas -> 422 ENCONTRO_INVALIDO (13.832974ms)\n✔ POST /atividades com palestra tendo 2 encontros -> 422 QUANTIDADE_DE_ENCONTROS (18.010675ms)\n✔ POST /atividades com salaId inexistente (critério 11) -> 422 DADOS_INVALIDOS (R12) (10.025981ms)\n✔ POST /atividades com titulo vazio -> 422 DADOS_INVALIDOS (13.251501ms)\n✔ POST /atividades com usuário inexistente -> 401 USUARIO_DESCONHECIDO (11.689761ms)\n✔ POST /atividades com sucesso -> 201 Atividade (R18, R19) (52.816419ms)\n✔ POST /atividades com campo obrigatório ausente -> 422 DADOS_INVALIDOS (R5) (8.266963ms)\n✔ POST /atividades com encontro atravessando a meia-noite (critério 22) -> 422 ENCONTRO_INVALIDO (R8) (11.827163ms)\n✔ POST /atividades com vagas superior à capacidade da sala (critério 10) -> 422 VAGAS_ACIMA_DA_CAPACIDADE (R11) (8.008002ms)\n✔ POST /atividades com dois encontros da mesma atividade sobrepostos no tempo (critério 8) -> 422 ENCONTRO_INVALIDO (R9) (6.626347ms)\n✔ POST /atividades com conflito de sala (menos de 15 min de intervalo, ex: 10:14) (critério 20) -> 409 CONFLITO_DE_SALA (R10) (17.507829ms)\n✔ R10, critério 20: encontro na mesma sala começando 15 min depois do fim do anterior (10:15) é aceito com 201 (13.323644ms)\n✔ R10, critério 21: encontro de atividade cancelada não gera CONFLITO_DE_SALA (23.68561ms)\n✔ R8: encontro com menos de 1 hora de duração -> 422 ENCONTRO_INVALIDO (7.540869ms)\n✔ R8: encontro fora do período de 19 a 23/10/2026 -> 422 ENCONTRO_INVALIDO (8.635257ms)\n✔ R11: vagas igual a 0 -> 422 DADOS_INVALIDOS (9.901938ms)\n✔ GET /atividades com filtros ?dia=2026-10-19&tipo=minicurso retorna apenas minicursos do dia especificado (critério 18) (165.023369ms)\n✔ GET /atividades?dia=2026-10-20 inclui encontro das 21:00 às 22:30 (critério 23) (13.577952ms)\n✔ Atividade cancelada aparece em GET /atividades com situação cancelada (critério 25) (20.411758ms)\n✔ Situação da atividade muda conforme o relógio de teste (prevista, em_andamento, encerrada) (critério 19, 26, R23) (32.633092ms)\n✔ GET /atividades ordena por início do 1º encontro e depois por título em ordem alfabética (R22) (21.961759ms)\n✔ PATCH /atividades/:id alterando salaId, tipo ou encontros retorna 422 CAMPO_NAO_EDITAVEL (critério 13, R14) (563.721677ms)\n✔ PATCH /atividades/:id em atividade já cancelada retorna 422 ATIVIDADE_CANCELADA (critério 15, R16) (141.875403ms)\n✔ POST /atividades/:id/cancelamento com relógio após ou exatamente no início do 1º encontro retorna 422 ATIVIDADE_JA_INICIADA (critérios 14, 24, R15) (143.118082ms)\n✔ PATCH /atividades/:id reduzindo vagas abaixo do número de ocupantes atuais retorna 409 VAGAS_ABAIXO_DOS_INSCRITOS (critério 16, R17) (119.2259ms)\n✔ POST /atividades/:id/cancelamento ignora corpo de requisição enviado (R20) (103.320756ms)\n✔ POST /_teste/reset deve resetar o sistema (214.074531ms)\n✔ GET /_teste/relogio deve retornar o relógio (13.352679ms)\n✔ PUT /_teste/relogio deve atualizar o relógio (26.90109ms)\nℹ tests 35\nℹ suites 0\nℹ pass 35\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 4001.319233\n```\n\n## Achados\n\n1. [PROVA FRACA] R2 — a spec exige que as rotas de escrita (`POST`, `PATCH`, `cancelamento`) recusem com `403 SOMENTE_ORGANIZACAO` se o usuário autenticado for `participante`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:23` valida apenas o `POST /atividades`, deixando `PATCH /atividades/:id` e `POST /atividades/:id/cancelamento` sem verificação específica para esse perfil.\n2. [PROVA FRACA] R4 — a spec exige `404 NAO_ENCONTRADO` para operações em atividades específicas (`GET`, `PATCH`, `cancelamento`), mas o teste em `api/verificacoes/M1-fatia1.spec.js:56` cobre apenas o `GET /atividades/:id`, sem testar `PATCH` e `cancelamento` com atividade inexistente.\n3. [PROVA FRACA] R5 — a spec exige `422 DADOS_INVALIDOS` para corpo malformado, não-JSON ou campos obrigatórios ausentes/inválidos, mas o teste em `api/verificacoes/M1-fatia2.spec.js:199` cobre apenas ausência de campo obrigatório (`tipo`), sem testar requisições não-JSON ou malformadas.\n4. [PROVA FRACA] R6 — a spec define a ordem completa de prioridade de erros (401 > 403 > 404 > 422), mas o teste em `api/verificacoes/M1-fatia2.spec.js:142` valida apenas que `401` ocorre antes, sem testar a precedência entre 403, 404 e 422.\n5. [PROVA FRACA] R7 — a spec estabelece regras para minicursos (2 a 5 encontros) e palestras (1 encontro), mas o teste em `api/verificacoes/M1-fatia2.spec.js:69` valida apenas palestra com 2 encontros, sem testar minicursos inválidos (< 2 ou > 5 encontros).\n6. [PROVA FRACA] R11 — a spec exige validação de vagas tanto no `POST` quanto no `PATCH`, mas o teste em `api/verificacoes/M1-fatia2.spec.js:247` cobre apenas o `POST`, sem verificar vagas acima da capacidade no `PATCH`.\n7. [PROVA FRACA] R16 — a spec determina que atividade cancelada não pode ser alterada nem cancelada novamente, mas o teste em `api/verificacoes/M1-fatia4.spec.js:76` valida apenas o `PATCH`, sem testar uma nova tentativa de cancelamento (`POST /atividades/:id/cancelamento`).\n8. [PROVA FRACA] R18 — a spec afirma que se o campo `cargaHorariaMinutos` for enviado no corpo, ele deve ser ignorado, mas o teste em `api/verificacoes/M1-fatia2.spec.js:195` apenas verifica que o campo é calculado corretamente pelo sistema, sem enviar o campo na requisição para testar se foi ignorado.\n9. [PROVA FRACA] R19 — a spec especifica que os IDs de encontros seguem o formato `enc_` + 8 hexadecimais minúsculos e são únicos em todo o sistema, mas o teste em `api/verificacoes/M1-fatia2.spec.js:194` verifica apenas o prefixo `enc_`, sem validar o formato de 8 hexadecimais ou a unicidade global.\n10. [PROVA FRACA] R24 — a spec define o cálculo de `ocupadas`, `vagasRestantes` e `emEspera`, mas o teste em `api/verificacoes/M1-fatia4.spec.js:212` valida apenas a métrica `ocupadas`, sem asserções sobre `vagasRestantes` e `emEspera`.\n\n## Veredito\n\nO módulo M1 pode ser aceito, desde que se complementem as suítes de teste para cobrir exaustivamente os cenários secundários apontados nas regras com prova fraca.\n"
+      },
+      "output": "Wrote file successfully.",
+      "metadata": {
+       "diagnostics": {},
+       "filepath": "/home/juliana/semana-academica/auditorias/M1-2026-09-20.md",
+       "exists": true,
+       "truncated": false
+      },
+      "title": "auditorias/M1-2026-09-20.md",
+      "time": {
+       "start": 1789935274705,
+       "end": 1789935274926
+      }
+     },
+     "metadata": {
+      "google": {
+       "thoughtSignature": "ErIHCq8HAWkUfRNzDU1/YAKb2dd+cBqQvaYpnftA/5MrIIO7+j83CymxPN3C/ReSRmXB2Bk6LJFNO63w9sCZ3NNxBImsXpp5PLgwuFZhevfSp9byEduoMkiGWqQ0U9La8FSQaI0zUEA06/eSySJgYcYB+mPOsRU8uBPxtTiyoaMAShjI2SR5JNLE0k4USaEQZF6EmAlsYRSuYZdjyPcKTOIEbg6f+I7BJbqz05gD6HWOgMnhMOy4c02dNBzf5eaFwDqggX8wP6Ii4n4qbCSnK73cP5K7WqDZRjAmH/OE4TGolBU1N9Kz/SbF3+cPgCvnohbhsCxNaxXQDIGtW78ux0zD2J1QtubVz8183A7rkPR7Pu2VtlMkXGWNSxsMk6x7g5Q54lhEZpX/lcIaDQDEvc7V97tKIf0X7C8LBjUqc7KeKi/htjhYSwuhMxKfgHfYsEpvniFo5BnE5c/VSj9t6lcj5BW/fk7xYUFlRnS2PbjOQtutLR0nCNuDEyvLyglzUm7BWulI8Qh5aiDfmT6xpKzmPNEQ7d/BfXVW1c/VPy/skcnawuAK9VYfghf2T69qnzXqNw0rTe4iDkATypi+GAPH/NHk6oEBzckbNVwdZbKXoCy1SfUqHzssMmxHONA2VCHuI/RmqIvJnGd0fZZJFyh15xhZMyjoNics+VaV70NF41Gd6FncomkakhHk9RmqLHiR44bs1fUbWM1D89FLZKSGh6vFvjaKmP5c2cASJKMqZ3148b+lrgByzQsyawBXKMo6yfDUy1g8e1pND7lBX7e4xT5cZP281VeqpDaGFGwDu2/YjR5iJ2HkrjCk/QSj4btMp5y87NFk+JN0+AFXTEO+KURx8DhWV+BbmEVeY362SPRjhS48ChoACKb6sqNb08hkDZs7ohNhG5e+ORuMeqMnh9gLsHQURVfKAn9pBVMSdPJMB7Fnl4JTBae8ZmEzUBJ4+GoqIZz3g7qUdgQRafbVeufDu+4Hs04xm+JphJxScAtokufaFV9fG/7PvW3Vl8lyYkBjiS6lxMdQIkEbqpuwEAdFsDvEgKMzT+Y8LZqq3d23xhvnHm/l9SoJ8O0sWGi60X3+pIykhQexehuqQIyuYTUFYdqgD39OK5DzaKO1fUZSQlAjOi/8S/jsKE1K8mhvBBRPvVdAEtHRzdGO3YP3BIm5dYrYxLR1jWiO1wXlHdDYP0BCll2kKpdovR8l5bzLX3Ha234Cd/gkYLBnI1e89RcBFHI08XCeONRJ8JkFC7/KFQ=="
+      }
+     },
+     "id": "prt_0c074ca91001iTfhkBQrVQ4PZ0",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c07494f2001K8NPGFC9V4mvtY"
+    },
+    {
+     "reason": "tool-calls",
+     "snapshot": "06c6361267bb6bb32935fa53723095cc29cd31df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 27028,
+      "input": 22822,
+      "output": 3973,
+      "reasoning": 233,
+      "cache": {
+       "write": 0,
+       "read": 0
+      }
+     },
+     "cost": 0.0173616,
+     "id": "prt_0c074cd370011AxRoumZ0PqRry",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c07494f2001K8NPGFC9V4mvtY"
+    },
+    {
+     "type": "patch",
+     "hash": "09587ac5500da142c57662a14f7aeb44a89000e2",
+     "files": [
+      "/home/juliana/semana-academica/auditorias/M1-2026-09-20.md"
+     ],
+     "id": "prt_0c074cefd001F4fsQJTRO0vyoy",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c07494f2001K8NPGFC9V4mvtY"
+    }
+   ]
+  },
+  {
+   "info": {
+    "parentID": "msg_0c0749498001FGswhvKSO5CNFf",
+    "role": "assistant",
+    "mode": "build",
+    "agent": "build",
+    "path": {
+     "cwd": "/home/juliana/semana-academica",
+     "root": "/home/juliana/semana-academica"
+    },
+    "cost": 0.00387346,
+    "tokens": {
+     "total": 27205,
+     "input": 10683,
+     "output": 25,
+     "reasoning": 45,
+     "cache": {
+      "write": 0,
+      "read": 16452
+     }
+    },
+    "modelID": "gemini-3.5-flash-lite",
+    "providerID": "google",
+    "time": {
+     "created": 1789935275815,
+     "completed": 1789935278761
+    },
+    "finish": "stop",
+    "id": "msg_0c074cf27001K3yeet1oZjPiHU",
+    "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C"
+   },
+   "parts": [
+    {
+     "snapshot": "06c6361267bb6bb32935fa53723095cc29cd31df",
+     "type": "step-start",
+     "id": "prt_0c074d7d6001sLSdbkee8KkaAy",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c074cf27001K3yeet1oZjPiHU"
+    },
+    {
+     "type": "text",
+     "text": "Parecer salvo em `auditorias/M1-2026-09-20.md`.",
+     "time": {
+      "start": 1789935278054,
+      "end": 1789935278079
+     },
+     "id": "prt_0c074d7e6001afGsDArErT4tnG",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c074cf27001K3yeet1oZjPiHU"
+    },
+    {
+     "reason": "stop",
+     "snapshot": "06c6361267bb6bb32935fa53723095cc29cd31df",
+     "type": "step-finish",
+     "tokens": {
+      "total": 27205,
+      "input": 10683,
+      "output": 25,
+      "reasoning": 45,
+      "cache": {
+       "write": 0,
+       "read": 16452
+      }
+     },
+     "cost": 0.00387346,
+     "id": "prt_0c074d93b001Mj15aVUehC0bxC",
+     "sessionID": "ses_f3f998243ffe4w3139ps7cKc3C",
+     "messageID": "msg_0c074cf27001K3yeet1oZjPiHU"
+    }
+   ]
+  }
+ ]
+}
